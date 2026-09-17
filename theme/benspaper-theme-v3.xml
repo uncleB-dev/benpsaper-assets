@@ -460,17 +460,11 @@ img { max-width: 100%; height: auto; display: block; }
 
       <nav aria-label='주 메뉴' class='main-nav'>
         <ul><li><a expr:href='data:blog.homepageUrl'>홈</a></li></ul>
-        <b:section class='nav-section' id='nav-section' maxwidgets='1' showaddelement='no'>
-          <b:widget id='Label2' locked='false' title='카테고리 메뉴' type='Label' visible='true'>
-            <b:includable id='main'>
-              <ul>
-                <b:loop values='data:labels' var='label'>
-                  <li><a expr:href='data:label.url'><data:label.name/></a></li>
-                </b:loop>
-              </ul>
-            </b:includable>
-          </b:widget>
-        </b:section>
+        <ul class='cat-nav'>
+          <li data-label='엑셀함수(스프레드시트)'><a href='/search/label/엑셀함수(스프레드시트)'>엑셀함수(스프레드시트)</a></li>
+          <li data-label='AI'><a href='/search/label/AI'>AI</a></li>
+          <li data-label='일상tip'><a href='/search/label/일상tip'>일상tip</a></li>
+        </ul>
         <ul><li><a href='/p/about.html'>소개</a></li></ul>
       </nav>
 
@@ -708,6 +702,22 @@ img { max-width: 100%; height: auto; display: block; }
         var input = searchBox.querySelector('input');
         if (input && searchBox.classList.contains('open')) input.focus();
       });
+    }
+
+    // 카테고리 메뉴: 글이 아직 없는 카테고리는 숨김 (빈 카테고리 노출 방지)
+    var catItems = document.querySelectorAll('.cat-nav li[data-label]');
+    if (catItems.length && window.fetch) {
+      fetch('/feeds/posts/summary?alt=json&max-results=0')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var used = {};
+          var cats = (d.feed && d.feed.category) || [];
+          for (var i = 0; i < cats.length; i++) used[cats[i].term] = true;
+          for (var j = 0; j < catItems.length; j++) {
+            if (!used[catItems[j].getAttribute('data-label')]) catItems[j].style.display = 'none';
+          }
+        })
+        .catch(function () {});
     }
 
     // 자동 목차: 글(post)에서 h2가 3개 이상이면 첫 h2 앞에 목차 삽입
