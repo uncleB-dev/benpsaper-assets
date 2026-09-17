@@ -35,8 +35,7 @@
   <b:if cond='data:blog.blogspotFaviconUrl'>
     <link expr:href='data:blog.blogspotFaviconUrl' rel='icon' type='image/x-icon'/>
   </b:if>
-  <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
-  <link href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+  <!-- 웹폰트 제거(3.3): 시스템 한글 글꼴 사용으로 첫 화면 표시 지연 제거 -->
 
   <!-- Open Graph + Twitter -->
   <b:with value='data:view.featuredImage ? data:view.featuredImage : &quot;https://raw.githubusercontent.com/uncleB-dev/benpsaper-assets/main/brand/og-default-v2.jpg&quot;' var='ogImage'>
@@ -180,7 +179,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', 'Segoe UI', sans-serif;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   transition: background .2s ease, color .2s ease;
@@ -430,6 +429,20 @@ img { max-width: 100%; height: auto; display: block; }
 .brand-title a:hover { text-decoration: none; }
 .footer-copy a { color: var(--text-muted); }
 
+
+/* ===== 3.3: 경로·시리즈·관련 글·링크 구분 ===== */
+.breadcrumb { font-size: 13px; color: var(--text-muted); margin: 0 0 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.breadcrumb a { color: var(--text-muted); }
+.post-body a, .author-desc a, .bp-page a, .series-box a { text-decoration: underline; text-underline-offset: 2px; }
+.series-box { margin-top: 20px; padding: 16px 20px; background: #eef6fb; border: 1px solid #cfe2ef; border-radius: var(--radius); }
+.series-box p { margin: 0; font-size: 15px; }
+.series-box .series-title { margin: 0 0 6px; font-weight: 800; color: var(--navy); }
+.related-posts { margin-top: 28px; }
+.related-title { font-size: 18px; font-weight: 800; color: var(--navy); margin: 0 0 12px; }
+.related-posts ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.related-posts li a { display: block; height: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elevated); color: var(--text); font-weight: 600; font-size: 15px; line-height: 1.5; }
+.related-posts li a:hover { border-color: var(--blue-light); text-decoration: none; }
+.comments-section .comments-title { font-size: 16px; font-weight: 800; color: var(--navy); margin: 0 0 8px; }
 ]]></b:skin>
   <b:include data='blog' name='google-analytics'/>
 </head>
@@ -460,6 +473,7 @@ img { max-width: 100%; height: auto; display: block; }
 
       <nav aria-label='주 메뉴' class='main-nav'>
         <ul><li><a expr:href='data:blog.homepageUrl'>홈</a></li></ul>
+        <ul><li><a href='/p/excel-guide.html'>엑셀 강좌</a></li></ul>
         <ul class='cat-nav'>
           <li data-label='엑셀함수(스프레드시트)'><a href='/search/label/엑셀함수(스프레드시트)'>엑셀함수(스프레드시트)</a></li>
           <li data-label='AI'><a href='/search/label/AI'>AI</a></li>
@@ -588,10 +602,13 @@ img { max-width: 100%; height: auto; display: block; }
               </script>
             </b:if>
             <div class='post-single-header'>
+              <b:if cond='data:view.isPost'>
+                <nav aria-label='현재 위치' class='breadcrumb'><a expr:href='data:blog.homepageUrl'>홈</a><b:if cond='data:post.labels'><b:loop index='i' values='data:post.labels' var='label'><b:if cond='data:i == 0'><span aria-hidden='true'>›</span><a expr:href='data:label.url'><data:label.name/></a></b:if></b:loop></b:if></nav>
+              </b:if>
               <h1 class='post-single-title'><data:post.title/></h1>
               <b:if cond='data:view.isPost'>
                 <div class='post-single-meta'>
-                  <span><data:post.date/></span>
+                  <time expr:datetime='data:post.date.iso8601'><data:post.date/></time>
                   <span>· <a href='/p/about.html'>엉클벤</a></span>
                   <b:if cond='data:post.labels'>
                     <b:loop values='data:post.labels' var='label'>
@@ -614,6 +631,24 @@ img { max-width: 100%; height: auto; display: block; }
                   <p class='author-desc'>엑셀·스프레드시트 함수, AI 활용법, 컴퓨터·스마트폰 생활 팁을 따라 하기 쉽게 정리합니다. 틀린 내용은 <a href='/p/contact.html'>연락처</a>로 알려 주세요. <a href='/p/about.html'>소개 보기</a></p>
                 </div>
               </div>
+              <b:if cond='data:post.labels'>
+                <b:loop values='data:post.labels' var='label'>
+                  <b:if cond='data:label.name == &quot;엑셀함수(스프레드시트)&quot;'>
+                    <div class='series-box'>
+                      <p class='series-title'>📚 벤스페이퍼 엑셀 강좌</p>
+                      <p>기초부터 피벗 테이블까지 배우는 순서대로 정리한 <a href='/p/excel-guide.html'>엑셀 강좌 전체 목차</a>에서 다음 글을 이어서 볼 수 있습니다.</p>
+                    </div>
+                  </b:if>
+                </b:loop>
+                <b:loop index='i' values='data:post.labels' var='label'>
+                  <b:if cond='data:i == 0'>
+                    <section class='related-posts' expr:data-label='data:label.name' expr:data-url='data:post.url' hidden='hidden'>
+                      <h2 class='related-title'>같은 카테고리 글</h2>
+                      <ul/>
+                    </section>
+                  </b:if>
+                </b:loop>
+              </b:if>
               <div class='post-footer'>
                 <div class='share-row'>
                   <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url + &quot;&amp;text=&quot; + data:post.title' rel='noopener' target='_blank' title='X(트위터) 공유'>X</a>
@@ -629,7 +664,7 @@ img { max-width: 100%; height: auto; display: block; }
         <b:includable id='comments' var='post'>
           <b:if cond='data:post.allowComments'>
             <div class='comments-section'>
-              <h4>댓글</h4>
+              <h2 class='comments-title'>댓글</h2>
               <p><a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'>댓글 남기기</a></p>
             </div>
           </b:if>
@@ -683,6 +718,7 @@ img { max-width: 100%; height: auto; display: block; }
       <div class='footer-copy'>© 벤스페이퍼(BensPaper) · 운영 엉클벤 · <a href='mailto:benspaperb@gmail.com'>benspaperb@gmail.com</a></div>
       <nav aria-label='사이트 정보' class='footer-links'>
         <ul>
+          <li><a href='/p/excel-guide.html'>엑셀 강좌 목차</a></li>
           <li><a href='/p/about.html'>소개</a></li>
           <li><a href='/p/contact.html'>연락처</a></li>
           <li><a href='/p/privacy-policy.html'>개인정보처리방침</a></li>
@@ -721,6 +757,26 @@ img { max-width: 100%; height: auto; display: block; }
           for (var j = 0; j < catItems.length; j++) {
             if (!used[catItems[j].getAttribute('data-label')]) catItems[j].style.display = 'none';
           }
+        })
+        .catch(function () {});
+    }
+
+    // 같은 카테고리 글 (현재 글 제외 최신 4편)
+    var rel = document.querySelector('.related-posts[data-label]');
+    if (rel && window.fetch) {
+      var cur = (rel.getAttribute('data-url') || '').split('?')[0];
+      fetch('/feeds/posts/summary/-/' + encodeURIComponent(rel.getAttribute('data-label')) + '?alt=json&max-results=8')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var list = rel.querySelector('ul'), n = 0;
+          (d.feed.entry || []).forEach(function (e) {
+            if (n >= 4) return;
+            var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
+            if (!link || link.href.split('?')[0] === cur) return;
+            var li = document.createElement('li'), a = document.createElement('a');
+            a.href = link.href; a.textContent = e.title.$t; li.appendChild(a); list.appendChild(li); n++;
+          });
+          if (n) rel.removeAttribute('hidden');
         })
         .catch(function () {});
     }
