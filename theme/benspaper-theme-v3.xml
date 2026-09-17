@@ -36,9 +36,10 @@
     <link expr:href='data:blog.blogspotFaviconUrl' rel='icon' type='image/x-icon'/>
   </b:if>
   <!-- 웹폰트 제거(3.3): 시스템 한글 글꼴 사용으로 첫 화면 표시 지연 제거 -->
+  <link crossorigin='anonymous' href='https://cdn.jsdelivr.net' rel='preconnect'/>
 
   <!-- Open Graph + Twitter -->
-  <b:with value='data:view.featuredImage ? data:view.featuredImage : &quot;https://raw.githubusercontent.com/uncleB-dev/benpsaper-assets/main/brand/og-default-v2.jpg&quot;' var='ogImage'>
+  <b:with value='data:view.featuredImage ? data:view.featuredImage : &quot;https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@78c87ba27cc19d89b35c0b417bb6a3396def4bed/brand/og-default-v2.jpg&quot;' var='ogImage'>
     <meta expr:content='data:blog.pageName ? data:blog.pageName : data:blog.title' property='og:title'/>
     <b:if cond='data:view.isHomepage'>
       <meta content='엑셀·구글 스프레드시트 함수, AI 활용법, 생활 속 컴퓨터·스마트폰 팁을 따라 하기 쉽게 단계별로 정리하는 블로그, 벤스페이퍼입니다.' property='og:description'/>
@@ -86,7 +87,7 @@
     "email": "benspaperb@gmail.com",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://raw.githubusercontent.com/uncleB-dev/benpsaper-assets/main/brand/og-default-v2.jpg"
+      "url": "https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@78c87ba27cc19d89b35c0b417bb6a3396def4bed/brand/og-default-v2.jpg"
     }
   }
   </script>
@@ -576,7 +577,7 @@ img { max-width: 100%; height: auto; display: block; }
                 "url": "<data:post.url.jsonEscaped/>",
                 "mainEntityOfPage": { "@type": "WebPage", "@id": "<data:post.url.jsonEscaped/>" },
                 "inLanguage": "ko",
-                "image": "<b:eval expr='data:post.featuredImage ? data:post.featuredImage : &quot;https://raw.githubusercontent.com/uncleB-dev/benpsaper-assets/main/brand/og-default-v2.jpg&quot;'/>",
+                "image": "<b:eval expr='data:post.featuredImage ? data:post.featuredImage : &quot;https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@78c87ba27cc19d89b35c0b417bb6a3396def4bed/brand/og-default-v2.jpg&quot;'/>",
                 "author": {
                   "@type": "Person",
                   "name": "엉클벤",
@@ -585,7 +586,7 @@ img { max-width: 100%; height: auto; display: block; }
                 "publisher": {
                   "@type": "Organization",
                   "name": "벤스페이퍼",
-                  "logo": { "@type": "ImageObject", "url": "https://raw.githubusercontent.com/uncleB-dev/benpsaper-assets/main/brand/og-default-v2.jpg" }
+                  "logo": { "@type": "ImageObject", "url": "https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@78c87ba27cc19d89b35c0b417bb6a3396def4bed/brand/og-default-v2.jpg" }
                 }
               }
               </script>
