@@ -696,7 +696,7 @@ img { max-width: 100%; height: auto; display: block; }
 
   <button aria-label='맨 위로' id='backToTop' type='button'>↑</button>
 
-  <script><![CDATA[
+  <script>//<![CDATA[
   (function () {
     // Search toggle
     var searchToggle = document.getElementById('searchToggle');
@@ -774,7 +774,7 @@ img { max-width: 100%; height: auto; display: block; }
     document.addEventListener('scroll', toggleBackBtn, { passive: true });
     if (backBtn) backBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   })();
-  ]]></script>
+  //]]></script>
 
 </body>
 </html>
