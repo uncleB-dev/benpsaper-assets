@@ -465,6 +465,11 @@ img { max-width: 100%; height: auto; display: block; }
           <li data-label='AI'><a href='/search/label/AI'>AI</a></li>
           <li data-label='일상tip'><a href='/search/label/일상tip'>일상tip</a></li>
         </ul>
+        <b:section class='nav-section' id='nav-section' maxwidgets='1' showaddelement='no'>
+          <b:widget id='Label2' locked='false' title='카테고리 메뉴' type='Label' visible='false'>
+            <b:includable id='main'/>
+          </b:widget>
+        </b:section>
         <ul><li><a href='/p/about.html'>소개</a></li></ul>
       </nav>
 
