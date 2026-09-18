@@ -479,6 +479,7 @@ img { max-width: 100%; height: auto; display: block; }
         <ul><li><a expr:href='data:blog.homepageUrl'>홈</a></li></ul>
         <ul><li><a href='/p/excel-guide.html'>엑셀 강좌</a></li></ul>
         <ul><li><a href='/p/shortcuts.html'>단축키 모음</a></li></ul>
+        <ul><li><a href='/p/claude-code-guide.html'>클로드 코드</a></li></ul>
         <ul class='cat-nav'>
           <li data-label='엑셀함수(스프레드시트)'><a href='/search/label/엑셀함수(스프레드시트)'>엑셀함수(스프레드시트)</a></li>
           <li data-label='AI'><a href='/search/label/AI'>AI</a></li>
@@ -725,6 +726,7 @@ img { max-width: 100%; height: auto; display: block; }
         <ul>
           <li><a href='/p/excel-guide.html'>엑셀 강좌 목차</a></li>
           <li><a href='/p/shortcuts.html'>단축키 모음</a></li>
+          <li><a href='/p/claude-code-guide.html'>클로드 코드 가이드</a></li>
           <li><a href='/p/about.html'>소개</a></li>
           <li><a href='/p/contact.html'>연락처</a></li>
           <li><a href='/p/privacy-policy.html'>개인정보처리방침</a></li>
