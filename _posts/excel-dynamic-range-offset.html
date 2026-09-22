@@ -1,0 +1,153 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>명단에 줄을 더하면 합계·개수·드롭다운 범위가 저절로 넓어지게 만듭니다. 범위를 매번 고쳐 쓸 필요가 없습니다.</li>
+    <li><code>OFFSET($A$2,0,0,COUNTA($A:$A)-1,1)</code>를 이름으로 정의하는 조합입니다. COUNTA가 줄 수를 세고, OFFSET이 그 길이만큼 범위를 잡습니다.</li>
+    <li>예제에서 6명일 때 A2:A7이던 범위가 한 줄을 더하자 A2:A8로 바뀌고, 상담 횟수 합계도 13에서 16으로 따라 바뀝니다.</li>
+  </ul>
+</div>
+
+<p>고객 명단을 매주 아래로 한 줄씩 늘려 가는 파일을 생각해 보십시오. 합계 칸에는 <code>=SUM(B2:B7)</code>, 드롭다운의 원본에는 <code>A2:A7</code>을 적어 두었는데, 8행에 새 고객을 적으면 그분은 합계에도 드롭다운에도 들어가지 않습니다. 범위를 고치는 걸 한 번 잊으면 숫자가 틀린 채로 보고서가 나가기도 합니다. 범위가 명단 길이를 스스로 따라가게 만들어 두면 이런 실수를 줄일 수 있습니다.</p>
+
+<p>생활에서는 날마다 한 줄씩 적는 가계부나 운동 기록의 합계·평균을 낼 때 같은 방법을 씁니다. 이 글은 엑셀 "목적별 함수 조합" 시리즈의 한 편입니다. OFFSET은 컴활 1급 준비 자료에서도 자주 보이는 함수라, 인수 다섯 개의 뜻을 익혀 두면 시험 공부에도 도움이 됩니다.</p>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-dynamic-range-offset/thumb.jpg" alt="늘어나도 따라가는 범위 - OFFSET COUNTA" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표 — 계속 늘어나는 고객 명단</h2>
+
+<p>시트 이름은 <strong>명단</strong>입니다. 맨 위 줄은 열 문자, 맨 왼쪽 칸은 행 번호입니다. 이름은 모두 가상입니다. 처음에는 7행까지 있고, 8행은 나중에 추가할 줄입니다.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>A</th><th>B</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>1</th><td>고객명</td><td>상담 횟수</td></tr>
+    <tr><th>2</th><td>김하늘</td><td>3</td></tr>
+    <tr><th>3</th><td>이도윤</td><td>1</td></tr>
+    <tr><th>4</th><td>박서연</td><td>2</td></tr>
+    <tr><th>5</th><td>최민준</td><td>4</td></tr>
+    <tr><th>6</th><td>정수아</td><td>1</td></tr>
+    <tr><th>7</th><td>한지호</td><td>2</td></tr>
+    <tr><th>8</th><td>(나중에 추가) 윤서준</td><td>3</td></tr>
+  </tbody>
+</table>
+
+<p>이 방식이 제대로 동작하려면 두 가지가 지켜져야 합니다. <strong>A열에는 1행 머리글과 고객 이름만</strong> 있어야 하고, <strong>이름 사이에 빈 줄이 없어야</strong> 합니다. 이유는 아래 "자주 막히는 곳"에서 실제 계산으로 보여 드립니다.</p>
+
+<h2>완성 수식 — 이름으로 정의하기</h2>
+
+<p>수식을 칸에 바로 쓰지 않고 <strong>이름</strong>(범위에 붙이는 별명)으로 정의해 둡니다. 그래야 합계·드롭다운 어디서든 같은 범위를 이름 하나로 부를 수 있습니다.</p>
+
+<ol>
+  <li>[수식] 탭 → [정의된 이름] 묶음 → [이름 정의]를 누릅니다.</li>
+  <li>"새 이름" 창의 <strong>이름</strong> 상자에 <code>고객목록</code>을 적습니다. 범위는 "통합 문서" 그대로 둡니다.</li>
+  <li><strong>참조 대상</strong> 상자의 내용을 지우고 아래 수식을 넣은 뒤 [확인]을 누릅니다.</li>
+</ol>
+
+<pre><code>=OFFSET(명단!$A$2,0,0,COUNTA(명단!$A:$A)-1,1)</code></pre>
+
+<p>같은 방법으로 이름 <code>상담횟수</code>를 하나 더 만듭니다. 시작 칸만 B2로 바뀌고, 줄 수는 똑같이 A열로 셉니다.</p>
+
+<pre><code>=OFFSET(명단!$B$2,0,0,COUNTA(명단!$A:$A)-1,1)</code></pre>
+
+<p>이제 이름을 이렇게 씁니다.</p>
+
+<table>
+  <thead>
+    <tr><th>쓰는 곳</th><th>넣는 것</th><th>7행까지일 때</th><th>8행을 추가한 뒤</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>상담 횟수 합계</td><td><code>=SUM(상담횟수)</code></td><td>13</td><td>16</td></tr>
+    <tr><td>고객 수</td><td><code>=COUNTA(고객목록)</code></td><td>6</td><td>7</td></tr>
+    <tr><td>평균 상담 횟수</td><td><code>=AVERAGE(상담횟수)</code></td><td>2.166…</td><td>2.285…</td></tr>
+    <tr><td>고객 이름 드롭다운</td><td>데이터 유효성 검사 → 목록 → 원본 <code>=고객목록</code></td><td>6명</td><td>7명</td></tr>
+  </tbody>
+</table>
+
+<p>8행에 윤서준 님을 적는 것만으로 합계·개수·드롭다운이 함께 바뀝니다. 수식은 하나도 고치지 않았습니다.</p>
+
+<h2>수식 풀어 보기 — 안쪽부터</h2>
+
+<p><code>OFFSET(명단!$A$2,0,0,COUNTA(명단!$A:$A)-1,1)</code>을 7행까지 있을 때 기준으로 봅니다.</p>
+
+<table>
+  <thead>
+    <tr><th>단계</th><th>식</th><th>중간 결과</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>① A열에서 비어 있지 않은 칸 세기</td><td><code>COUNTA(명단!$A:$A)</code></td><td>7 (머리글 1 + 고객 6)</td></tr>
+    <tr><td>② 머리글 빼기</td><td><code>①-1</code></td><td>6</td></tr>
+    <tr><td>③ 범위 잡기</td><td><code>OFFSET($A$2,0,0,6,1)</code></td><td>A2에서 6줄 × 1칸 = A2:A7</td></tr>
+    <tr><td>④ 합계에 쓰면</td><td><code>SUM(상담횟수)</code> = <code>SUM(B2:B7)</code></td><td>3+1+2+4+1+2 = 13</td></tr>
+  </tbody>
+</table>
+
+<p>8행을 추가하면 ①이 8, ②가 7이 되어 범위가 A2:A8로 늘어나고 합계는 16이 됩니다.</p>
+
+<ul>
+  <li><strong>COUNTA</strong>는 비어 있지 않은 칸의 개수를 셉니다. 글자든 숫자든 셉니다. 머리글 "고객명"도 한 칸으로 세기 때문에 1을 뺍니다.</li>
+  <li><strong>OFFSET(기준, 행 이동, 열 이동, 높이, 너비)</strong>은 기준 칸에서 몇 줄·몇 칸 옮긴 자리부터 정한 크기만큼의 범위를 돌려줍니다. 여기서는 옮기지 않고(0, 0) 기준 A2에서 시작해 높이만 COUNTA로 정했습니다. Microsoft 문서 설명대로 OFFSET은 칸을 실제로 옮기거나 선택을 바꾸지 않고 "참조를 구할 뿐"이라, SUM처럼 범위를 받는 함수 안에 넣어 쓸 수 있습니다.</li>
+</ul>
+
+<p>검증 방법도 밝혀 둡니다. 계산에 쓴 파이썬 formulas 라이브러리는 OFFSET을 지원하지 않습니다. 그래서 OFFSET이 돌려줄 범위는 Microsoft 문서의 정의대로 계산했고(문서 예제 세 개와 결과가 같은지 먼저 확인), COUNTA 값과 그 범위를 넣은 SUM·COUNTA·AVERAGE 결과는 formulas로 계산해 확인했습니다. 즉 OFFSET 자체의 동작은 <strong>Microsoft 문서 기준</strong>입니다.</p>
+
+<h2>자주 막히는 곳</h2>
+
+<div class="bp-note">
+  <p><strong>명단 가운데 빈 줄이 있으면 마지막 사람이 빠집니다.</strong> 예제에서 4행과 5행 사이에 빈 줄을 하나 넣어 계산해 보니, COUNTA는 여전히 7이라 범위는 A2:A7로 잡혔습니다. 그런데 실제 명단은 한 줄 밀려 8행까지 있으므로 마지막 한지호 님이 빠지고 합계가 13이 아닌 11이 나왔습니다. 이 방식을 쓰는 열에는 빈 줄을 두지 않습니다.</p>
+</div>
+
+<ul>
+  <li><strong>같은 열 아래쪽에 메모를 적으면 범위가 늘어납니다.</strong> A20에 "메모: 9월 명단"을 적고 계산하니 COUNTA가 8이 되어 범위가 A2:A8로, 빈 칸 하나를 더 품었습니다. 합계는 그대로였지만 드롭다운에는 빈 항목이 낄 수 있습니다. 메모는 다른 열이나 다른 시트에 적습니다.</li>
+  <li><strong>빈 글자("")를 돌려주는 수식도 셉니다.</strong> Microsoft 문서에 따르면 COUNTA는 오류값과 빈 텍스트("")가 든 칸도 셉니다. A열 아래쪽에 <code>=IF(…,"",…)</code> 같은 수식을 미리 채워 두면 보이지 않아도 개수에 들어갑니다.</li>
+  <li><strong>명단이 비면 <code>#REF!</code></strong> — 머리글만 있으면 높이가 0이 됩니다. Microsoft 문서는 OFFSET의 높이와 너비가 양수여야 한다고 설명합니다. 명단에 최소 한 명은 있어야 합니다.</li>
+  <li><strong>참조 대상에는 시트 이름과 <code>$</code>를 붙입니다.</strong> <code>명단!$A$2</code>처럼 써야 다른 시트에서 이름을 써도 같은 범위를 가리킵니다. <code>$</code>가 없으면 이름을 쓰는 칸 위치에 따라 범위가 달라질 수 있습니다.</li>
+</ul>
+
+<h2>다른 방법 — 표 기능</h2>
+
+<p>수식이 부담스럽다면 명단을 엑셀 <strong>표</strong>로 바꾸는 방법이 있습니다. Microsoft 문서 기준으로 명단 안의 칸 하나를 누르고 [홈] 탭 → [표 서식]에서 스타일을 고른 뒤, 범위와 머리글 포함 여부를 확인하고 [확인]을 누르면 됩니다. Microsoft 문서는 드롭다운 목록을 표에서 만들어 두면 항목을 추가하거나 지울 때 드롭다운이 자동으로 바뀐다고 안내합니다. 표의 자세한 사용법은 아래 "함께 보면 좋은 글"의 표 기능 글에 있습니다.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>OFFSET + COUNTA 이름</th><th>표 기능</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>준비</td><td>이름 정의 창에 수식 입력</td><td>메뉴 한 번</td></tr>
+    <tr><td>주의할 점</td><td>빈 줄·같은 열 메모에 약함 (위 "자주 막히는 곳")</td><td>표 범위 안에 적어야 함</td></tr>
+    <tr><td>보기 모양</td><td>바뀌지 않음</td><td>고른 표 스타일이 입혀짐</td></tr>
+    <tr><td>원리 이해·시험 대비</td><td>OFFSET 인수를 익히기 좋음</td><td>메뉴 기능</td></tr>
+  </tbody>
+</table>
+
+<p>실무에서 새로 만드는 명단이라면 표 기능이 간단하고, 이미 모양이 정해진 양식이나 표로 바꾸기 곤란한 시트라면 OFFSET 방식이 쓸모 있습니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details><summary>만든 이름을 고치거나 지우려면 어디로 가나요?</summary><p>[수식] 탭의 [정의된 이름] 묶음에서 [이름 관리자]를 열면 만든 이름이 모두 보입니다. 이름을 골라 참조 대상 수식을 고치거나 삭제할 수 있습니다.</p></details>
+  <details><summary>COUNTA 대신 COUNT를 써도 되나요?</summary><p>COUNT는 숫자가 든 칸만 셉니다. 고객 이름처럼 글자가 든 열의 줄 수를 세려면 COUNTA를 써야 합니다. 숫자만 있는 열로 줄 수를 센다면 COUNT를 쓰고 머리글을 빼는 -1도 필요 없어집니다.</p></details>
+  <details><summary>열이 늘어나는 표에도 쓸 수 있나요?</summary><p>네. 옆으로 늘어나는 경우에는 너비 자리에 <code>COUNTA(명단!$1:$1)</code>처럼 1행의 개수를 넣고 높이는 고정하면 됩니다. 원리는 같고 방향만 바뀝니다.</p></details>
+</div>
+
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "만든 이름을 고치거나 지우려면 어디로 가나요?", "acceptedAnswer": {"@type": "Answer", "text": "[수식] 탭의 [정의된 이름] 묶음에서 [이름 관리자]를 열면 만든 이름이 모두 보입니다. 이름을 골라 참조 대상 수식을 고치거나 삭제할 수 있습니다."}},
+    {"@type": "Question", "name": "COUNTA 대신 COUNT를 써도 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "COUNT는 숫자가 든 칸만 셉니다. 고객 이름처럼 글자가 든 열의 줄 수를 세려면 COUNTA를 써야 합니다. 숫자만 있는 열로 줄 수를 센다면 COUNT를 쓰고 머리글을 빼는 -1도 필요 없어집니다."}},
+    {"@type": "Question", "name": "열이 늘어나는 표에도 쓸 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 옆으로 늘어나는 경우에는 너비 자리에 COUNTA(명단!$1:$1)처럼 1행의 개수를 넣고 높이는 고정하면 됩니다. 원리는 같고 방향만 바뀝니다."}}
+  ]
+}</script>
+
+<h2>함께 보면 좋은 글</h2>
+<ul>
+  <li><a href="https://www.benspaper.info/2026/09/excel-count-counta.html">엑셀 COUNT·COUNTA 차이와 사용법</a> — COUNTA 자세히</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-table-feature.html">엑셀 표 기능으로 범위를 표로 바꾸기</a> — 수식 없이 늘어나는 범위</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-absolute-reference.html">엑셀 절대참조·상대참조와 $ 쓰는 법</a> — <code>$A$2</code>의 뜻</li>
+  <li><a href="https://www.benspaper.info/p/excel-guide.html">엑셀 글 전체 목차</a> — 드롭다운 만들기 등 목적별 함수 조합 시리즈 모아 보기</li>
+</ul>
+
+<p>참고: <a href="https://support.microsoft.com/ko-kr/office/offset-%ED%95%A8%EC%88%98-c8de19ae-dd79-4b9b-a14e-b4d906d11b66">OFFSET 함수 (Microsoft 지원)</a> · <a href="https://support.microsoft.com/ko-kr/office/counta-%ED%95%A8%EC%88%98-7dc98875-d5c1-46f1-9a82-53f3219e2509">COUNTA 함수 (Microsoft 지원)</a> · <a href="https://support.microsoft.com/ko-kr/excel/use-the-name-manager-in-excel">Excel에서 이름 관리자 사용 (Microsoft 지원)</a></p>

@@ -1,0 +1,137 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>VLOOKUP으로 찾는 이름이 표에 없으면 <code>#N/A</code>가 뜹니다. 이 자리를 빈칸이나 "미등록"으로 바꾸는 방법입니다.</li>
+    <li>쓰는 조합은 <code>=IFERROR(VLOOKUP(…), "")</code>이고, INDEX·MATCH에도 똑같이 씌웁니다.</li>
+    <li>결과: 명단에 없는 사람은 빈칸, 있는 사람은 연락처가 채워집니다. 단, 찾은 칸이 비어 있으면 0이 뜨는 함정이 따로 있습니다.</li>
+  </ul>
+</div>
+
+<p>새로 들어온 상담 신청 명단을 기존 고객표와 맞춰 볼 때가 있습니다. VLOOKUP으로 연락처를 끌어오면 이미 아는 고객은 번호가 채워지는데, 처음 온 사람 줄에는 <code>#N/A</code>가 줄줄이 찍힙니다. 틀린 게 아니라 "표에 없다"는 뜻인데, 인쇄하거나 공유하기에는 보기 좋지 않습니다. 이 오류 자리를 빈칸으로 바꾸고, 빈칸이면 "신규"라고 표시해 두면 누구에게 먼저 연락할지 한눈에 보입니다.</p>
+<p>컴활 실기에서도 "코드가 없으면 '코드오류'를 표시하시오"처럼 IFERROR로 찾기 함수를 감싸는 조건이 나올 수 있습니다. 이 글은 엑셀 "목적별 함수 조합" 시리즈의 한 편입니다.</p>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-iferror-lookup/thumb.jpg" alt="#N/A 대신 빈칸 표시 - IFERROR 찾기 조합" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표: 기존 고객표와 새 신청 명단</h2>
+<p>한 시트 안에 A~C열은 기존 고객표, E~H열은 새 신청 명단이 있다고 하겠습니다. 이름과 번호는 모두 가상입니다. 맨 윗줄은 열 문자, 맨 왼쪽은 행 번호입니다. 박지훈 고객의 관심 상품(C4)은 일부러 비워 두었습니다.</p>
+<table>
+  <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>이름</td><td>연락처</td><td>관심 상품</td><td></td><td>신청자</td><td>연락처</td><td>구분</td><td>관심 상품</td></tr>
+    <tr><td>2</td><td>김민준</td><td>010-0000-1101</td><td>실손</td><td></td><td>이서연</td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td>이서연</td><td>010-0000-1102</td><td>건강</td><td></td><td>윤지우</td><td></td><td></td><td></td></tr>
+    <tr><td>4</td><td>박지훈</td><td>010-0000-1103</td><td>(빈칸)</td><td></td><td>박지훈</td><td></td><td></td><td></td></tr>
+    <tr><td>5</td><td>최수아</td><td>010-0000-1104</td><td>운전자</td><td></td><td>한유진</td><td></td><td></td><td></td></tr>
+    <tr><td>6</td><td>정도윤</td><td>010-0000-1105</td><td>암</td><td></td><td>정도윤</td><td></td><td></td><td></td></tr>
+    <tr><td>7</td><td>강하은</td><td>010-0000-1106</td><td>치아</td><td></td><td>임하준</td><td></td><td></td><td></td></tr>
+    <tr><td>8</td><td>조예준</td><td>010-0000-1107</td><td>실손</td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<p>기존 고객표가 다른 시트에 있어도 방법은 같습니다. 범위 앞에 시트 이름을 붙여 <code>고객표!$A$2:$C$8</code>처럼 쓰면 됩니다.</p>
+
+<h2>완성 수식과 결과</h2>
+<ol>
+  <li>F2 셀을 클릭하고 아래 수식을 입력한 뒤 <kbd>Enter</kbd>를 누릅니다.</li>
+</ol>
+<pre><code>=IFERROR(VLOOKUP(E2, $A$2:$C$8, 2, FALSE), "")</code></pre>
+<ol start="2">
+  <li>G2 셀에 아래 수식을 넣습니다. F열이 비어 있으면 "신규", 아니면 "기존고객"이라고 적는 수식입니다.</li>
+</ol>
+<pre><code>=IF(F2="", "신규", "기존고객")</code></pre>
+<ol start="3">
+  <li>F2:G2를 함께 선택하고 채우기 핸들(선택 영역 오른쪽 아래의 작은 네모)을 7행까지 끌어내립니다.</li>
+</ol>
+<table>
+  <thead><tr><th>행</th><th>E 신청자</th><th>VLOOKUP만 썼을 때</th><th>F 연락처 (IFERROR)</th><th>G 구분</th></tr></thead>
+  <tbody>
+    <tr><td>2</td><td>이서연</td><td>010-0000-1102</td><td>010-0000-1102</td><td>기존고객</td></tr>
+    <tr><td>3</td><td>윤지우</td><td>#N/A</td><td>(빈칸)</td><td>신규</td></tr>
+    <tr><td>4</td><td>박지훈</td><td>010-0000-1103</td><td>010-0000-1103</td><td>기존고객</td></tr>
+    <tr><td>5</td><td>한유진</td><td>#N/A</td><td>(빈칸)</td><td>신규</td></tr>
+    <tr><td>6</td><td>정도윤</td><td>010-0000-1105</td><td>010-0000-1105</td><td>기존고객</td></tr>
+    <tr><td>7</td><td>임하준</td><td>#N/A</td><td>(빈칸)</td><td>신규</td></tr>
+  </tbody>
+</table>
+<p>신규가 몇 명인지는 <code>=COUNTIF(G2:G7, "신규")</code>로 셉니다. 예제에서는 <strong>3</strong>이 나옵니다. 범위 <code>$A$2:$C$8</code>에 달러 기호를 붙인 이유는 수식을 아래로 끌어도 고객표 범위가 한 칸씩 밀려 내려가지 않게 하려는 것입니다.</p>
+
+<h2>수식 풀어 보기: 안쪽부터 한 겹씩</h2>
+<p>3행 윤지우와 2행 이서연을 나란히 놓고 따라가 보겠습니다.</p>
+<ol>
+  <li><strong>가장 안쪽 <code>VLOOKUP(E3, $A$2:$C$8, 2, FALSE)</code></strong> — A열에서 "윤지우"를 정확히 같은 값(FALSE)으로 찾고, 찾으면 범위의 2번째 열(연락처)을 가져옵니다. 윤지우는 A열에 없으므로 중간 결과는 <strong><code>#N/A</code></strong>입니다. 이서연이라면 <strong>010-0000-1102</strong>가 나옵니다.</li>
+  <li><strong>바깥 <code>IFERROR(중간 결과, "")</code></strong> — IFERROR는 첫 번째 값이 오류인지 봅니다. 오류면 두 번째 값을, 아니면 첫 번째 값을 그대로 돌려줍니다. 윤지우는 <code>#N/A</code>이므로 <code>""</code>(아무 글자도 없는 빈 문자열)가 나오고, 이서연은 연락처가 그대로 나옵니다.</li>
+  <li><strong>옆 칸 <code>IF(F3="", "신규", "기존고객")</code></strong> — F3이 빈 문자열이므로 "신규"가 나옵니다.</li>
+</ol>
+<p>두 번째 인수에는 빈칸 말고 원하는 글자를 넣어도 됩니다. <code>=IFERROR(VLOOKUP(E2, $A$2:$C$8, 2, FALSE), "미등록")</code>으로 쓰면 없는 사람 자리에 "미등록"이 적힙니다.</p>
+
+<h2>자주 막히는 곳</h2>
+<div class="bp-note"><p><strong>찾은 칸이 비어 있으면 0이 뜹니다.</strong> H2에 관심 상품을 <code>=IFERROR(VLOOKUP(E2, $A$2:$C$8, 3, FALSE), "미등록")</code>로 끌어오면, 박지훈 줄에 "미등록"도 빈칸도 아닌 <strong>0</strong>이 나옵니다. 박지훈은 표에 있으니 오류가 아니고, 찾아온 C4 칸이 비어 있어서 엑셀이 0으로 보여 주는 것입니다. IFERROR는 오류만 바꾸므로 이 0은 그대로 남습니다.</p>
+<p>글자를 가져오는 열이라면 VLOOKUP 뒤에 <code>&amp;""</code>를 붙이면 빈칸으로 바뀝니다.</p>
+<pre><code>=IFERROR(VLOOKUP(E2, $A$2:$C$8, 3, FALSE)&amp;"", "미등록")</code></pre>
+<p>다만 <code>&amp;""</code>는 결과를 글자로 바꿔 버리므로 날짜나 금액을 가져오는 열에는 쓰지 않습니다. 그럴 때는 <code>=IFERROR(IF(VLOOKUP(…)="", "", VLOOKUP(…)), "미등록")</code>처럼 비었는지 먼저 확인합니다.</p></div>
+<ul>
+  <li><strong>분명히 있는 사람인데 "신규"로 나올 때</strong> — 이름 뒤에 공백이 붙어 있는 경우가 흔합니다. "이서연 "처럼 띄어쓰기 하나만 달라도 VLOOKUP은 못 찾고, IFERROR가 그 사실을 빈칸으로 덮어 버립니다. <code>VLOOKUP(TRIM(E2), …)</code>처럼 찾는 값을 TRIM으로 감싸면 앞뒤 공백을 지우고 찾습니다.</li>
+  <li><strong>IFERROR는 실수까지 가립니다</strong> — Microsoft 문서에 따르면 IFERROR는 <code>#N/A</code>뿐 아니라 <code>#VALUE!</code>, <code>#REF!</code>, <code>#DIV/0!</code>, <code>#NUM!</code>, <code>#NAME?</code>, <code>#NULL!</code>까지 모두 바꿉니다. 예를 들어 범위가 3열인데 열 번호를 5로 잘못 쓰면 원래는 <code>#REF!</code>가 떠야 하지만, IFERROR로 감싸면 전부 빈칸이 되어 실수를 알아채기 어렵습니다. 수식을 처음 만들 때는 IFERROR 없이 결과를 확인한 다음 마지막에 씌우세요.</li>
+  <li><strong>빈칸 결과로 계산하면 <code>#VALUE!</code></strong> — <code>""</code>는 숫자가 아니라 빈 글자입니다. <code>=F3*2</code>처럼 곱하면 <code>#VALUE!</code>가 나옵니다. SUM은 글자를 건너뛰므로 합계에는 문제가 없습니다.</li>
+</ul>
+
+<h2>다른 방법: INDEX·MATCH, IFNA, XLOOKUP</h2>
+<p><strong>INDEX·MATCH에 씌우기</strong> — 찾는 열이 가져올 열보다 오른쪽에 있어도 되는 조합입니다. 바깥에 IFERROR를 씌우는 방법은 똑같습니다.</p>
+<pre><code>=IFERROR(INDEX($B$2:$B$8, MATCH(E2, $A$2:$A$8, 0)), "")</code></pre>
+<p>MATCH가 이름의 위치(몇 번째 줄인지)를 찾고, INDEX가 그 줄의 연락처를 꺼냅니다. 이름이 없으면 MATCH에서 <code>#N/A</code>가 나오고, IFERROR가 그걸 빈칸으로 바꿉니다. 예제에 넣으면 위 표의 F열과 같은 결과가 나옵니다.</p>
+<p><strong>IFNA — "없음"만 골라서 바꾸기</strong> — 구문은 IFERROR와 같고, <code>#N/A</code>일 때만 두 번째 값을 돌려줍니다. Microsoft 문서 기준으로 엑셀 2013부터 쓸 수 있습니다. 앞에서 말한 열 번호 실수(<code>#REF!</code>)는 IFNA로 감싸도 그대로 보이므로 실수를 놓치지 않습니다.</p>
+<pre><code>=IFNA(VLOOKUP(E2, $A$2:$C$8, 2, FALSE), "")</code></pre>
+<p><strong>XLOOKUP — 엑셀 2021 · 2024 · Microsoft 365 전용</strong> — 네 번째 인수(if_not_found)에 찾지 못했을 때 보여 줄 값을 바로 넣습니다. IFERROR로 감쌀 필요가 없습니다. Microsoft 문서에 엑셀 2016·2019에서는 쓸 수 없다고 되어 있으니, 파일을 주고받는 상대의 버전이 섞여 있다면 위의 IFERROR 방식이 안전합니다.</p>
+<pre><code>=XLOOKUP(E2, $A$2:$A$8, $B$2:$B$8, "")</code></pre>
+<table>
+  <thead><tr><th>방법</th><th>바꾸는 오류</th><th>쓸 수 있는 버전</th></tr></thead>
+  <tbody>
+    <tr><td>IFERROR + VLOOKUP / INDEX·MATCH</td><td>모든 오류</td><td>2016·2019 포함 대부분</td></tr>
+    <tr><td>IFNA + VLOOKUP</td><td>#N/A만</td><td>2013 이후</td></tr>
+    <tr><td>XLOOKUP 네 번째 인수</td><td>못 찾은 경우</td><td>2021 · 2024 · 365</td></tr>
+  </tbody>
+</table>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details>
+    <summary>IFERROR를 썼는데도 VLOOKUP 결과에 0이 나와요.</summary>
+    <p>찾는 사람은 있는데 가져온 칸이 비어 있는 경우입니다. 오류가 아니라서 IFERROR가 바꾸지 않습니다. 글자 열이면 <code>VLOOKUP(…)&amp;""</code>, 날짜·금액 열이면 <code>IF(VLOOKUP(…)="", "", VLOOKUP(…))</code>로 비었는지 먼저 확인합니다.</p>
+  </details>
+  <details>
+    <summary>IFERROR와 IFNA 중 무엇을 써야 하나요?</summary>
+    <p>"표에 없음"만 가리고 싶다면 IFNA가 낫습니다. 열 번호나 범위를 잘못 쓴 실수(#REF! 등)는 그대로 보여 주기 때문입니다. 컴활 문제에서 IFERROR를 지정하면 IFERROR를 씁니다.</p>
+  </details>
+  <details>
+    <summary>분명히 있는 이름인데 빈칸으로 나옵니다.</summary>
+    <p>이름 앞뒤에 공백이 있거나, 숫자와 텍스트 형식이 달라서 VLOOKUP이 못 찾은 것을 IFERROR가 빈칸으로 덮은 경우가 많습니다. IFERROR를 잠시 지워 오류를 확인하고, 공백이면 <code>VLOOKUP(TRIM(E2), …)</code>로 찾습니다.</p>
+  </details>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "IFERROR를 썼는데도 VLOOKUP 결과에 0이 나와요.", "acceptedAnswer": { "@type": "Answer", "text": "찾는 사람은 있는데 가져온 칸이 비어 있는 경우입니다. 오류가 아니라서 IFERROR가 바꾸지 않습니다. 글자 열이면 VLOOKUP(…)&\"\", 날짜·금액 열이면 IF(VLOOKUP(…)=\"\", \"\", VLOOKUP(…))로 비었는지 먼저 확인합니다." } },
+    { "@type": "Question", "name": "IFERROR와 IFNA 중 무엇을 써야 하나요?", "acceptedAnswer": { "@type": "Answer", "text": "\"표에 없음\"만 가리고 싶다면 IFNA가 낫습니다. 열 번호나 범위를 잘못 쓴 실수(#REF! 등)는 그대로 보여 주기 때문입니다. 컴활 문제에서 IFERROR를 지정하면 IFERROR를 씁니다." } },
+    { "@type": "Question", "name": "분명히 있는 이름인데 빈칸으로 나옵니다.", "acceptedAnswer": { "@type": "Answer", "text": "이름 앞뒤에 공백이 있거나, 숫자와 텍스트 형식이 달라서 VLOOKUP이 못 찾은 것을 IFERROR가 빈칸으로 덮은 경우가 많습니다. IFERROR를 잠시 지워 오류를 확인하고, 공백이면 VLOOKUP(TRIM(E2), …)로 찾습니다." } }
+  ]
+}
+</script>
+
+<h2>함께 보면 좋은 글</h2>
+<ul>
+  <li><a href="https://www.benspaper.info/2026/09/excel-vlookup-function.html">엑셀 VLOOKUP 함수</a> — 인수 네 개의 뜻과 기본 오류</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-index-match.html">엑셀 INDEX MATCH</a> — 왼쪽 열도 찾아오는 조합의 문법</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-trim-len.html">엑셀 TRIM · LEN</a> — 눈에 안 보이는 공백 찾고 지우기</li>
+  <li><a href="https://www.benspaper.info/p/excel-guide.html">엑셀 글 전체 목차</a> — 이 시리즈의 다른 조합 글도 여기서 찾을 수 있습니다</li>
+</ul>
+
+<h2>참고</h2>
+<ul>
+  <li><a href="https://support.microsoft.com/ko-kr/office/iferror-%ED%95%A8%EC%88%98-c526fd07-caeb-47b8-8bb6-63f3e417f611">Microsoft 지원 — IFERROR 함수</a></li>
+  <li><a href="https://support.microsoft.com/ko-kr/office/ifna-%ED%95%A8%EC%88%98-6626c961-a569-42fc-a49d-79b4951fd461">Microsoft 지원 — IFNA 함수</a></li>
+  <li><a href="https://support.microsoft.com/ko-kr/office/vlookup-%ED%95%A8%EC%88%98%EC%97%90%EC%84%9C-n-a-%EC%98%A4%EB%A5%98%EB%A5%BC-%EC%88%98%EC%A0%95%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-e037d763-ffc3-4fae-a909-89c482d389b2">Microsoft 지원 — VLOOKUP 함수에서 #N/A 오류를 수정하는 방법</a></li>
+</ul>

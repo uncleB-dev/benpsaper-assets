@@ -1,0 +1,171 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>주민등록번호 앞 7자리(예: <code>900315-1</code>)만으로 생년월일 날짜와 성별을 한 번에 구합니다.</li>
+    <li>생년월일은 <code>DATE</code> + <code>MID</code> + <code>CHOOSE</code>, 성별은 <code>=CHOOSE(MID(B2,8,1),"남","여","남","여")</code> 조합입니다.</li>
+    <li><code>020507-3</code>은 2002년 5월 7일·남, <code>081201-4</code>는 2008년 12월 1일·여로 나옵니다. 1~4가 아닌 숫자는 오류로 드러나게 만듭니다.</li>
+  </ul>
+</div>
+
+<p>명단을 받을 때 생년월일 열은 없고 주민등록번호 앞자리만 적혀 있는 경우가 있습니다. 영업하는 분이라면 이 앞자리로 생년월일 열을 만들어 두어야 생일 안내나 나이 계산을 할 수 있습니다. 한 명씩 보고 날짜를 옮겨 적는 대신, 앞 7자리에서 필요한 글자만 잘라 날짜로 조립하면 명단 전체를 한 번에 채울 수 있습니다.</p>
+
+<p>자격증 공부를 하다 보면 주민등록번호로 성별이나 출생 연도를 구하는 문제를 자주 만납니다. 이 글은 "목적별 함수 조합" 시리즈의 한 편으로, 글자를 자르는 MID, 번호에 따라 값을 고르는 CHOOSE, 연·월·일을 날짜로 만드는 DATE를 어떤 순서로 겹치는지 한 겹씩 풀어 봅니다.</p>
+
+<div class="bp-note">
+  <p><strong>이 글의 번호는 모두 가짜이고, 앞 7자리만 씁니다.</strong> 생년월일 여섯 자리와 성별을 나타내는 뒷자리 첫 숫자까지만 있으면 이 글의 계산은 모두 됩니다. 실제 명단에서도 계산에 필요한 앞 7자리 외에는 파일에 담지 않는 편이 안전합니다.</p>
+</div>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-birthdate-gender-from-id/thumb.jpg" alt="번호 앞자리로 생일·성별 구하기 - MID DATE 조합" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표 — 앞 7자리가 있는 명단</h2>
+
+<p>뒷자리 첫 숫자는 정부 정책브리핑의 설명대로 1900년대 출생은 남자 1·여자 2, 2000년 이후 출생은 남자 3·여자 4입니다. 이 글은 이 네 가지 숫자만 다룹니다. B열의 번호는 하이픈(<code>-</code>)이 들어 있어 엑셀이 글자로 저장합니다.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>1</th><td>이름</td><td>주민번호 앞 7자리</td><td>생년월일</td><td>성별</td></tr>
+    <tr><th>2</th><td>김민준</td><td>900315-1</td><td></td><td></td></tr>
+    <tr><th>3</th><td>이서연</td><td>850924-2</td><td></td><td></td></tr>
+    <tr><th>4</th><td>박지훈</td><td>020507-3</td><td></td><td></td></tr>
+    <tr><th>5</th><td>최수아</td><td>081201-4</td><td></td><td></td></tr>
+    <tr><th>6</th><td>정우진</td><td>720110-1</td><td></td><td></td></tr>
+    <tr><th>7</th><td>강하은</td><td>991130-2</td><td></td><td></td></tr>
+    <tr><th>8</th><td>윤도현</td><td>100707-3</td><td></td><td></td></tr>
+    <tr><th>9</th><td>한지아</td><td>050214-4</td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<p><code>900315-1</code>을 한 글자씩 세면 1번째가 9, 7번째가 하이픈, <strong>8번째가 성별 숫자</strong>입니다. 이 위치 번호가 수식의 핵심입니다.</p>
+
+<table>
+  <thead>
+    <tr><th>위치</th><th>1~2</th><th>3~4</th><th>5~6</th><th>7</th><th>8</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>글자</td><td>90</td><td>03</td><td>15</td><td>-</td><td>1</td></tr>
+    <tr><td>뜻</td><td>연도 뒤 두 자리</td><td>월</td><td>일</td><td>구분 기호</td><td>성별·출생 세기</td></tr>
+  </tbody>
+</table>
+
+<h2>완성 수식 — C2·D2에 넣고 아래로 채우기</h2>
+
+<pre><code>C2: =DATE(CHOOSE(MID(B2,8,1),1900,1900,2000,2000)+LEFT(B2,2),MID(B2,3,2),MID(B2,5,2))
+D2: =CHOOSE(MID(B2,8,1),"남","여","남","여")</code></pre>
+
+<ol>
+  <li>C2와 D2에 위 수식을 각각 입력합니다.</li>
+  <li>C2:D2를 함께 선택하고 채우기 핸들을 9행까지 끌어내립니다.</li>
+  <li>C열에 <code>32947</code> 같은 숫자가 보이면 C열을 선택하고 표시 형식을 <strong>간단한 날짜</strong>로 바꿉니다. 엑셀은 날짜를 일련번호로 저장하기 때문에 서식을 바꿔야 날짜 모양이 됩니다.</li>
+</ol>
+
+<table>
+  <thead>
+    <tr><th></th><th>A</th><th>B</th><th>C (생년월일)</th><th>D (성별)</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>2</th><td>김민준</td><td>900315-1</td><td>1990-03-15</td><td>남</td></tr>
+    <tr><th>3</th><td>이서연</td><td>850924-2</td><td>1985-09-24</td><td>여</td></tr>
+    <tr><th>4</th><td>박지훈</td><td>020507-3</td><td>2002-05-07</td><td>남</td></tr>
+    <tr><th>5</th><td>최수아</td><td>081201-4</td><td>2008-12-01</td><td>여</td></tr>
+    <tr><th>6</th><td>정우진</td><td>720110-1</td><td>1972-01-10</td><td>남</td></tr>
+    <tr><th>7</th><td>강하은</td><td>991130-2</td><td>1999-11-30</td><td>여</td></tr>
+    <tr><th>8</th><td>윤도현</td><td>100707-3</td><td>2010-07-07</td><td>남</td></tr>
+    <tr><th>9</th><td>한지아</td><td>050214-4</td><td>2005-02-14</td><td>여</td></tr>
+  </tbody>
+</table>
+
+<h2>수식 풀어 보기 — 안쪽부터 한 겹씩</h2>
+
+<h3>성별 (D열)</h3>
+
+<ol>
+  <li><strong><code>MID(B4,8,1)</code></strong> → 박지훈 님의 <code>020507-3</code>에서 8번째 글자부터 1글자를 꺼냅니다. 결과는 글자 <code>"3"</code>입니다. MID는 시작 위치와 글자 수를 받아 가운데 글자를 잘라 내는 함수입니다.</li>
+  <li><strong><code>CHOOSE("3","남","여","남","여")</code></strong> → CHOOSE는 첫 번째 인수가 가리키는 순번의 값을 고릅니다. 3이면 세 번째 값 <code>남</code>입니다. 1·2·3·4에 차례로 남·여·남·여를 적어 두었으니 뒷자리 숫자가 무엇이든 성별이 맞게 나옵니다.</li>
+</ol>
+
+<h3>생년월일 (C열)</h3>
+
+<ol>
+  <li><strong><code>MID(B4,8,1)</code></strong> → 성별과 같은 숫자 <code>"3"</code>. 이 숫자는 태어난 세기도 알려 줍니다.</li>
+  <li><strong><code>CHOOSE("3",1900,1900,2000,2000)</code></strong> → 1·2면 1900, 3·4면 2000을 고릅니다. 결과는 <code>2000</code>.</li>
+  <li><strong><code>2000+LEFT(B4,2)</code></strong> → LEFT가 앞 두 글자 <code>"02"</code>를 꺼냅니다. 글자지만 더하기에 쓰이면 숫자 2로 계산되어 <code>2002</code>가 됩니다.</li>
+  <li><strong><code>MID(B4,3,2)</code></strong> → 3번째부터 2글자 <code>"05"</code>(월), <strong><code>MID(B4,5,2)</code></strong> → 5번째부터 2글자 <code>"07"</code>(일).</li>
+  <li><strong><code>DATE(2002,"05","07")</code></strong> → 연·월·일을 날짜로 조립합니다. 2002년 5월 7일, 일련번호 <code>37383</code>입니다.</li>
+</ol>
+
+<p>Microsoft의 DATE 도움말에도 <code>=DATE(LEFT(C2,4),MID(C2,5,2),RIGHT(C2,2))</code>처럼 텍스트에서 연·월·일을 잘라 날짜로 바꾸는 예가 나옵니다. 여기서는 연도가 두 자리뿐이라 세기를 CHOOSE로 붙여 준 것이 다릅니다. 연도에 1900이나 2000을 더하지 않고 <code>DATE(2,5,7)</code>처럼 두 자리만 넣으면, DATE는 0~1899 사이의 연도에 1900을 더하는 규칙이 있어 1902년이 됩니다. 2000년대생이 100년 전 사람이 되는 것입니다.</p>
+
+<h2>자주 막히는 곳</h2>
+
+<table>
+  <thead>
+    <tr><th>증상</th><th>원인</th><th>해결</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>성별이 전부 <code>#VALUE!</code></td><td>하이픈이 있는데 MID 위치를 7로 적었습니다. 7번째 글자는 <code>-</code>라서 CHOOSE가 순번으로 쓸 수 없습니다.</td><td>하이픈이 있으면 8, 없으면 7로 맞춥니다.</td></tr>
+    <tr><td>몇 사람만 <code>#VALUE!</code></td><td>뒷자리 첫 숫자가 1~4가 아닙니다. CHOOSE는 순번이 1보다 작거나 준비한 값의 개수보다 크면 <code>#VALUE!</code>를 돌려줍니다.</td><td>번호를 다시 확인합니다. 이 오류는 계산 규칙 밖의 번호를 찾아 주는 표시이기도 합니다.</td></tr>
+    <tr><td>2000년대생 날짜가 이상함</td><td>하이픈 없이 <code>0205073</code>을 입력해 숫자로 저장되면서 맨 앞 0이 사라졌습니다. <code>205073</code>이 되어 LEFT가 <code>"20"</code>을 꺼냅니다.</td><td>번호 열을 먼저 <strong>텍스트</strong> 서식으로 바꾸고 입력하거나, 번호 앞에 작은따옴표(<code>'</code>)를 붙여 입력합니다.</td></tr>
+    <tr><td>날짜 대신 숫자가 보임</td><td>날짜 일련번호가 일반 서식으로 보입니다.</td><td>C열을 간단한 날짜 서식으로 바꿉니다.</td></tr>
+  </tbody>
+</table>
+
+<div class="bp-note">
+  <p><strong>이미 앞 0이 사라진 명단이라면</strong> TEXT로 일곱 자리를 되살린 뒤 같은 수식을 씁니다. 하이픈 없는 일곱 자리이므로 성별 위치는 7입니다. 예를 들어 <code>205073</code>이 든 칸을 <code>TEXT(B2,"0000000")</code>으로 감싸면 <code>"0205073"</code>이 되고, 이것을 넣은 <code>=DATE(CHOOSE(MID(TEXT(B2,"0000000"),7,1),1900,1900,2000,2000)+LEFT(TEXT(B2,"0000000"),2),MID(TEXT(B2,"0000000"),3,2),MID(TEXT(B2,"0000000"),5,2))</code>의 결과는 2002년 5월 7일입니다. 수식이 길어지므로 옆 열에 TEXT 결과를 따로 만들어 두고 그 열을 참조하는 편이 읽기 쉽습니다.</p>
+</div>
+
+<h2>다른 방법 — IF·MOD로 쓰기</h2>
+
+<h3>1. 성별을 MOD로 (시험에서 자주 보는 형태)</h3>
+
+<pre><code>=IF(MOD(MID(B2,8,1),2)=1,"남","여")</code></pre>
+
+<p>MOD는 나눗셈의 나머지를 구합니다. <code>MOD(3,2)</code>는 1, <code>MOD(4,2)</code>는 0입니다. 뒷자리가 1·3처럼 홀수면 남, 2·4처럼 짝수면 여라는 규칙을 그대로 옮긴 수식입니다. 예제 8명 모두 CHOOSE와 같은 결과가 나왔습니다. 다만 이 수식은 1~4가 아닌 숫자도 홀짝으로 나눠 버리므로, 잘못 적힌 번호를 걸러 주지는 못합니다.</p>
+
+<h3>2. 세기를 IF로</h3>
+
+<pre><code>=DATE(IF(VALUE(MID(B2,8,1))&lt;=2,1900,2000)+LEFT(B2,2),MID(B2,3,2),MID(B2,5,2))</code></pre>
+
+<p>VALUE로 글자 <code>"3"</code>을 숫자 3으로 바꾼 뒤 2 이하면 1900, 아니면 2000을 붙입니다. 예제 8명은 CHOOSE와 같은 날짜가 나옵니다. 차이는 규칙 밖 번호에서 드러납니다. 뒷자리가 5인 번호를 넣어 보면 CHOOSE 쪽은 <code>#VALUE!</code>로 멈추지만, IF 쪽은 2000을 붙여 1990년생을 2090년생으로 만들어 버립니다. 오류가 나는 편이 오히려 안전하다는 이유로 이 글은 CHOOSE를 완성 수식으로 골랐습니다.</p>
+
+<h3>3. 규칙 밖 번호를 "확인"으로 표시</h3>
+
+<pre><code>=IFERROR(CHOOSE(MID(B2,8,1),"남","여","남","여"),"확인")</code></pre>
+
+<p>오류 대신 <code>확인</code>이 보이게 하면 다시 봐야 할 사람을 필터로 모으기 쉽습니다. 만든 생년월일로 나이를 계산하려면 <code>=DATEDIF(C2,TODAY(),"Y")</code>를 이어 쓰면 됩니다. 2026년 9월 24일 기준으로 김민준 님은 36세입니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details><summary>하이픈이 없는 일곱 자리면 수식을 어떻게 바꾸나요?</summary><p>성별 숫자가 7번째 글자가 되므로 MID(B2,8,1)을 MID(B2,7,1)로 바꾸면 됩니다. 연·월·일을 꺼내는 LEFT(B2,2), MID(B2,3,2), MID(B2,5,2)는 그대로입니다. 번호가 텍스트로 저장되어 있어 맨 앞 0이 살아 있는지 먼저 확인하세요.</p></details>
+  <details><summary>결과를 "1990년 3월 15일"처럼 보이게 할 수 있나요?</summary><p>C열은 진짜 날짜 값이므로 표시 형식만 바꾸면 됩니다. 셀 서식의 날짜 범주에서 원하는 모양을 고르세요. 값 자체는 그대로라 나이 계산이나 정렬에도 그대로 쓸 수 있습니다.</p></details>
+  <details><summary>CHOOSE 대신 중첩 IF로 성별을 구해도 되나요?</summary><p>됩니다. IF(OR(MID(B2,8,1)="1",MID(B2,8,1)="3"),"남",IF(OR(MID(B2,8,1)="2",MID(B2,8,1)="4"),"여","확인"))처럼 쓰면 1~4 밖의 번호를 확인으로 표시할 수 있습니다. MID 결과가 글자이므로 비교할 숫자도 따옴표로 감싸야 합니다.</p></details>
+</div>
+
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "하이픈이 없는 일곱 자리면 수식을 어떻게 바꾸나요?", "acceptedAnswer": {"@type": "Answer", "text": "성별 숫자가 7번째 글자가 되므로 MID(B2,8,1)을 MID(B2,7,1)로 바꾸면 됩니다. 연·월·일을 꺼내는 LEFT(B2,2), MID(B2,3,2), MID(B2,5,2)는 그대로입니다. 번호가 텍스트로 저장되어 있어 맨 앞 0이 살아 있는지 먼저 확인하세요."}},
+    {"@type": "Question", "name": "결과를 \"1990년 3월 15일\"처럼 보이게 할 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "C열은 진짜 날짜 값이므로 표시 형식만 바꾸면 됩니다. 셀 서식의 날짜 범주에서 원하는 모양을 고르세요. 값 자체는 그대로라 나이 계산이나 정렬에도 그대로 쓸 수 있습니다."}},
+    {"@type": "Question", "name": "CHOOSE 대신 중첩 IF로 성별을 구해도 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "됩니다. IF(OR(MID(B2,8,1)=\"1\",MID(B2,8,1)=\"3\"),\"남\",IF(OR(MID(B2,8,1)=\"2\",MID(B2,8,1)=\"4\"),\"여\",\"확인\"))처럼 쓰면 1~4 밖의 번호를 확인으로 표시할 수 있습니다. MID 결과가 글자이므로 비교할 숫자도 따옴표로 감싸야 합니다."}}
+  ]
+}</script>
+
+<h2>함께 보면 좋은 글</h2>
+<ul>
+  <li><a href="https://www.benspaper.info/2026/09/excel-left-right-mid.html">엑셀 LEFT RIGHT MID 함수로 글자 자르기</a> — MID·LEFT 문법</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-value-function.html">엑셀 VALUE 함수 텍스트 숫자를 숫자로</a> — 글자로 된 숫자 다루기</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-cell-format.html">엑셀 표시 형식과 셀 서식 정리</a> — 날짜 서식 바꾸기</li>
+  <li><a href="https://www.benspaper.info/p/excel-guide.html">엑셀 함수 목차</a> — 목적별 함수 조합 시리즈 전체 보기</li>
+</ul>
+
+<h2>참고</h2>
+<ul>
+  <li><a href="https://support.microsoft.com/ko-kr/office/date-함수-e36c0c8c-4104-49da-ab83-82328b832349">DATE 함수 — Microsoft 지원</a></li>
+  <li><a href="https://support.microsoft.com/ko-KR/Excel/choose-function">CHOOSE 함수 — Microsoft 지원</a></li>
+  <li><a href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=148818721">'출생의 비밀' 주민등록번호, 더 안전해진다 — 대한민국 정책브리핑</a></li>
+</ul>

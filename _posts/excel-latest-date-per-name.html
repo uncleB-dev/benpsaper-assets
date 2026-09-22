@@ -1,0 +1,162 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>한 사람의 기록이 여러 줄에 흩어진 표에서 고객마다 가장 최근 날짜와 그날의 내용을 한 줄로 뽑습니다.</li>
+    <li>최근 날짜는 <code>MAXIFS</code>(엑셀 2019·365), 옛 버전은 <code>MAX(IF(…))</code>. 내용은 <code>LOOKUP(2,1/(…),…)</code> 조합으로 찾습니다.</li>
+    <li>여기에 <code>TODAY()-최근날짜</code>를 붙이면 "마지막 연락 후 며칠 지났나"가 나와, 오래 연락 못 한 분을 먼저 챙길 수 있습니다.</li>
+  </ul>
+</div>
+
+<p>상담 기록을 날짜순으로 한 줄씩 쌓아 가다 보면, "김하늘 고객님과 마지막으로 이야기한 게 언제였지?"를 확인하려고 표를 위아래로 훑게 됩니다. 고객이 수십 명이 되면 이 일만으로 시간이 꽤 갑니다. 고객별 최근 상담일을 한 표에 모아 두고 오늘로부터 며칠 지났는지까지 계산해 두면, 오래 연락드리지 못한 분부터 순서대로 연락할 수 있습니다.</p>
+
+<p>생활에서는 운동 기록에서 종목별 마지막 운동일, 가계부에서 항목별 마지막 결제일을 찾을 때 같은 방법을 씁니다. 이 글은 엑셀 "목적별 함수 조합" 시리즈의 한 편입니다. 컴활을 준비한다면 MAX·IF·LOOKUP을 겹쳐 쓰는 풀이 연습으로도 볼 만합니다.</p>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-latest-date-per-name/thumb.jpg" alt="고객별 최근 날짜 찾기 - MAXIFS LOOKUP" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표 — 상담 기록 9줄</h2>
+
+<p>맨 위 줄은 열 문자, 맨 왼쪽 칸은 행 번호입니다. 이름은 모두 가상입니다. A열은 날짜 서식이 적용된 진짜 날짜입니다.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>1</th><td>상담일</td><td>고객명</td><td>상담 내용</td></tr>
+    <tr><th>2</th><td>2026-07-03</td><td>김하늘</td><td>전화상담</td></tr>
+    <tr><th>3</th><td>2026-07-10</td><td>이도윤</td><td>방문상담</td></tr>
+    <tr><th>4</th><td>2026-07-21</td><td>김하늘</td><td>서류안내</td></tr>
+    <tr><th>5</th><td>2026-08-04</td><td>박서연</td><td>전화상담</td></tr>
+    <tr><th>6</th><td>2026-08-12</td><td>이도윤</td><td>연락처변경</td></tr>
+    <tr><th>7</th><td>2026-08-25</td><td>김하늘</td><td>방문상담</td></tr>
+    <tr><th>8</th><td>2026-09-02</td><td>박서연</td><td>방문상담</td></tr>
+    <tr><th>9</th><td>2026-09-09</td><td>최민준</td><td>전화상담</td></tr>
+    <tr><th>10</th><td>2026-07-28</td><td>이도윤</td><td>전화상담</td></tr>
+  </tbody>
+</table>
+
+<p>10행은 7월에 있었던 상담을 9월에 뒤늦게 적어 넣은 줄입니다. 실제 기록표에서 흔히 생기는 일이고, 이 한 줄 때문에 방법에 따라 결과가 달라집니다. 오른쪽 F열(F2:F6)에는 결과를 볼 고객 이름 김하늘·이도윤·박서연·최민준·정수아를 적어 둡니다. 정수아 님은 기록이 없는 경우를 보려고 넣었습니다.</p>
+
+<h2>완성 수식</h2>
+
+<p>아래 세 수식을 각각 G2·H2·I2에 넣고 6행까지 채웁니다.</p>
+
+<p><strong>G2 — 가장 최근 상담일</strong> (엑셀 2019·365)</p>
+
+<pre><code>=MAXIFS($A$2:$A$10,$B$2:$B$10,F2)</code></pre>
+
+<p><strong>H2 — 마지막 상담 후 지난 날수</strong></p>
+
+<pre><code>=TODAY()-G2</code></pre>
+
+<p><strong>I2 — 가장 최근 날짜의 상담 내용</strong></p>
+
+<pre><code>=LOOKUP(2,1/(($B$2:$B$10=F2)*($A$2:$A$10=G2)),$C$2:$C$10)</code></pre>
+
+<p>G열은 날짜 서식을 적용해야 날짜로 보입니다. 서식이 없으면 46259처럼 숫자로 보이는데, 엑셀이 날짜를 속으로 숫자로 저장하기 때문이라 값 자체는 맞습니다. 결과는 아래와 같습니다. H열은 오늘을 2026-09-22로 두고 계산한 값이라, 실제로는 여는 날에 따라 달라집니다.</p>
+
+<table>
+  <thead>
+    <tr><th>F 고객명</th><th>G 최근 상담일</th><th>H 지난 날수</th><th>I 그날 내용</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>김하늘</td><td>2026-08-25</td><td>28</td><td>방문상담</td></tr>
+    <tr><td>이도윤</td><td>2026-08-12</td><td>41</td><td>연락처변경</td></tr>
+    <tr><td>박서연</td><td>2026-09-02</td><td>20</td><td>방문상담</td></tr>
+    <tr><td>최민준</td><td>2026-09-09</td><td>13</td><td>전화상담</td></tr>
+    <tr><td>정수아</td><td>0 (기록 없음)</td><td>아주 큰 수</td><td>#N/A</td></tr>
+  </tbody>
+</table>
+
+<p>모든 값은 예제 표를 엑셀 파일로 만들어 파이썬 formulas 라이브러리로 계산해 확인했습니다(TODAY는 날짜를 고정해 계산). H열을 큰 순서로 정렬하면 이도윤 님이 가장 오래 연락이 없던 분으로 맨 위에 옵니다.</p>
+
+<h2>수식 풀어 보기 — 안쪽부터</h2>
+
+<p><strong>G열 <code>MAXIFS(최대값 범위, 조건 범위, 조건)</code></strong></p>
+
+<p>MAXIFS는 조건에 맞는 줄만 골라 그중 가장 큰 값을 돌려줍니다. 날짜는 속으로 숫자이고 최근일수록 큰 수이므로, "가장 큰 날짜 = 가장 최근 날짜"입니다. 이도윤 님은 B열에서 3행·6행·10행이 해당하고, 그 날짜 7/10·8/12·7/28 중 가장 큰 8/12가 나옵니다. 줄 순서와 상관없이 날짜 자체를 비교하므로 10행처럼 뒤늦게 적은 줄에 흔들리지 않습니다.</p>
+
+<p><strong>I열 <code>LOOKUP(2,1/(조건1*조건2),결과 범위)</code></strong> — 이도윤 님(G열 2026-08-12) 기준으로 안쪽부터 봅니다.</p>
+
+<table>
+  <thead>
+    <tr><th>단계</th><th>식</th><th>2~10행의 중간 결과</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>① 이름 비교</td><td><code>$B$2:$B$10=F3</code></td><td>F, T, F, F, T, F, F, F, T</td></tr>
+    <tr><td>② 날짜 비교</td><td><code>$A$2:$A$10=G3</code></td><td>F, F, F, F, T, F, F, F, F</td></tr>
+    <tr><td>③ 둘 다 맞나(곱하기)</td><td><code>①*②</code></td><td>0, 0, 0, 0, 1, 0, 0, 0, 0</td></tr>
+    <tr><td>④ 1을 나누기</td><td><code>1/③</code></td><td>오류, 오류, 오류, 오류, 1, 오류, 오류, 오류, 오류</td></tr>
+    <tr><td>⑤ 2 찾기</td><td><code>LOOKUP(2,④,$C$2:$C$10)</code></td><td>1이 있는 6행의 C열 → "연락처변경"</td></tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>①②의 T는 TRUE(참), F는 FALSE(거짓)입니다. 곱하면 TRUE는 1, FALSE는 0으로 계산되므로 두 조건이 모두 맞는 줄만 1이 됩니다.</li>
+  <li>1을 0으로 나누면 <code>#DIV/0!</code> 오류가 나므로 ④는 맞는 줄만 1이고 나머지는 오류입니다.</li>
+  <li>⑤에서 LOOKUP은 2를 찾습니다. 배열에는 1과 오류뿐이라 2는 없습니다. Microsoft 문서에 따르면 LOOKUP은 찾는 값이 없으면 그보다 작거나 같은 값 중 가장 큰 값에 맞춥니다. 그 결과 1이 있는 자리, 1이 여러 개면 <strong>마지막 1의 자리</strong>를 찾아 같은 위치의 C열 값을 돌려줍니다.</li>
+</ul>
+
+<p>한 가지 밝혀 둘 점이 있습니다. Microsoft 문서는 LOOKUP의 찾을 범위가 오름차순이어야 한다고 설명합니다. <code>1/(…)</code>로 1과 오류만 남긴 배열을 쓰는 이 방식은 문서에 나온 사용법이 아니라 엑셀 사용자들 사이에 널리 쓰이는 응용입니다. 이 글의 결과는 계산으로 확인했지만, 결과가 이상하면 아래 "다른 방법"의 버전별 대안을 함께 써서 맞춰 보십시오.</p>
+
+<h2>자주 막히는 곳</h2>
+
+<div class="bp-note">
+  <p><strong>기록이 없는 고객이 0이나 엉뚱한 옛 날짜로 나올 때</strong> — Microsoft 문서대로 MAXIFS는 조건에 맞는 칸이 없으면 0을 돌려줍니다. 0에 날짜 서식이 붙으면 엉뚱한 옛 날짜처럼 보이고, H열 지난 날수는 4만이 넘는 큰 수가 됩니다. 기록이 없을 때 글자로 표시하려면 COUNTIF로 먼저 확인합니다.</p>
+  <pre><code>=IF(COUNTIF($B$2:$B$10,F2)=0,"기록 없음",MAXIFS($A$2:$A$10,$B$2:$B$10,F2))</code></pre>
+</div>
+
+<ul>
+  <li><strong>날짜가 글자로 들어 있으면 빠집니다.</strong> "2026.09.30"처럼 점으로 찍어 입력한 칸은 엑셀이 날짜가 아닌 글자로 받는 경우가 있습니다. 계산해 보니 MAXIFS는 이런 칸을 건너뛰고 나머지 날짜 중 최대값을 돌려줬습니다. 최근 기록이 빠진 것 같다면 빈 칸에 <code>=ISNUMBER(A2)</code>를 넣어 보십시오. 진짜 날짜면 TRUE, 글자면 FALSE가 나옵니다.</li>
+  <li><strong>범위 크기를 똑같이</strong> — MAXIFS의 최대값 범위와 조건 범위는 크기와 모양이 같아야 하고, 다르면 <code>#VALUE!</code>가 납니다(Microsoft 문서). A2:A10과 B2:B10처럼 시작 행과 끝 행을 맞춥니다.</li>
+  <li><strong><code>$</code> 고정</strong> — 아래로 채울 때 기록 범위가 밀리지 않도록 <code>$A$2:$A$10</code>처럼 고정하고, 고객 이름 칸 F2만 고정하지 않습니다.</li>
+  <li><strong>H열이 날짜 모양으로 보이면</strong> 셀 서식을 "일반"이나 "숫자"로 바꾸면 28 같은 날수로 보입니다.</li>
+</ul>
+
+<h2>다른 방법</h2>
+
+<p><strong>엑셀 2016 이하 — MAXIFS가 없을 때</strong></p>
+
+<p>MAXIFS는 Microsoft 문서 기준 Office 2019와 Microsoft 365에서 쓸 수 있습니다. 그 전 버전에서는 MAX와 IF를 겹칩니다.</p>
+
+<pre><code>=MAX(IF($B$2:$B$10=F2,$A$2:$A$10))</code></pre>
+
+<p>IF가 이름이 맞는 줄만 날짜를 남기고 나머지는 FALSE로 바꾸면, MAX가 남은 날짜 중 가장 큰 값을 고릅니다. 예제에서 G열과 같은 결과가 나왔습니다. Microsoft 365가 아닌 버전에서는 이런 배열 수식을 <kbd>Enter</kbd> 대신 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>로 입력해야 합니다.</p>
+
+<p><strong>"마지막으로 적힌 줄"이면 충분할 때</strong></p>
+
+<p>기록을 늘 날짜순으로만 쌓는다면 날짜 조건 없이 짧게 써도 됩니다.</p>
+
+<pre><code>=LOOKUP(2,1/($B$2:$B$10=F2),$C$2:$C$10)
+=LOOKUP(2,1/($B$2:$B$10=F2),$A$2:$A$10)</code></pre>
+
+<p>다만 이 식은 "가장 최근 날짜"가 아니라 "표에서 가장 아래에 있는 줄"을 찾습니다. 예제의 이도윤 님은 이 식으로 찾으면 10행의 2026-07-28, "전화상담"이 나옵니다. 실제 최근 상담인 8/12와 다릅니다. 뒤늦게 적는 줄이 생길 수 있는 표라면 앞의 날짜 조건을 넣은 식을 쓰십시오.</p>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details><summary>가장 오래된 날짜(첫 상담일)도 같은 방법으로 찾나요?</summary><p>네. MAXIFS 자리에 같은 모양의 MINIFS를 쓰면 조건에 맞는 줄 중 가장 작은 날짜, 곧 첫 상담일이 나옵니다. MINIFS도 엑셀 2019·365에서 쓸 수 있습니다.</p></details>
+  <details><summary>30일 넘게 연락 안 한 고객만 보고 싶어요.</summary><p>H열에 필터를 걸고 숫자 필터에서 30보다 큰 값만 고르면 됩니다. 조건부 서식으로 30보다 큰 칸에 색을 칠해 두어도 한눈에 보입니다.</p></details>
+  <details><summary>LOOKUP 식이 #N/A를 돌려줘요.</summary><p>그 고객의 기록이 한 줄도 없거나, 이름 글자가 다른 경우입니다. 앞뒤 공백이나 띄어쓰기 차이가 있는지 확인하고, 기록이 없는 고객은 IFERROR로 감싸 "기록 없음"처럼 표시하면 됩니다.</p></details>
+</div>
+
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "가장 오래된 날짜(첫 상담일)도 같은 방법으로 찾나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. MAXIFS 자리에 같은 모양의 MINIFS를 쓰면 조건에 맞는 줄 중 가장 작은 날짜, 곧 첫 상담일이 나옵니다. MINIFS도 엑셀 2019·365에서 쓸 수 있습니다."}},
+    {"@type": "Question", "name": "30일 넘게 연락 안 한 고객만 보고 싶어요.", "acceptedAnswer": {"@type": "Answer", "text": "H열에 필터를 걸고 숫자 필터에서 30보다 큰 값만 고르면 됩니다. 조건부 서식으로 30보다 큰 칸에 색을 칠해 두어도 한눈에 보입니다."}},
+    {"@type": "Question", "name": "LOOKUP 식이 #N/A를 돌려줘요.", "acceptedAnswer": {"@type": "Answer", "text": "그 고객의 기록이 한 줄도 없거나, 이름 글자가 다른 경우입니다. 앞뒤 공백이나 띄어쓰기 차이가 있는지 확인하고, 기록이 없는 고객은 IFERROR로 감싸 \"기록 없음\"처럼 표시하면 됩니다."}}
+  ]
+}</script>
+
+<h2>함께 보면 좋은 글</h2>
+<ul>
+  <li><a href="https://www.benspaper.info/2026/09/excel-max-min-large.html">엑셀 MAX·MIN·LARGE로 최대값 찾기</a> — MAX 함수 자세히</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-date-functions.html">엑셀 날짜 함수 정리</a> — 날짜가 숫자로 저장되는 원리</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-autofilter.html">엑셀 필터로 원하는 데이터만 보기</a> — 지난 날수로 거르기</li>
+  <li><a href="https://www.benspaper.info/p/excel-guide.html">엑셀 글 전체 목차</a> — 목적별 함수 조합 시리즈 모아 보기</li>
+</ul>
+
+<p>참고: <a href="https://support.microsoft.com/ko-kr/office/maxifs-%ED%95%A8%EC%88%98-dfd611e6-da2c-488a-919b-9b6376b28883">MAXIFS 함수 (Microsoft 지원)</a> · <a href="https://support.microsoft.com/ko-kr/office/lookup-%ED%95%A8%EC%88%98-446d94af-663b-451d-8251-369d5e3864cb">LOOKUP 함수 (Microsoft 지원)</a></p>

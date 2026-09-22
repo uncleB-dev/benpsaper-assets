@@ -1,0 +1,129 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>1월부터 12월까지 시트가 따로 있을 때, 같은 칸을 모두 더해 연간 합계를 내는 방법입니다.</li>
+    <li>쓰는 조합은 3차원 참조 <code>=SUM('1월:12월'!B2)</code>이고, 시트마다 줄 순서가 다르면 <code>SUMPRODUCT + SUMIF + INDIRECT</code>로 이름을 맞춰 더합니다.</li>
+    <li>결과: 수식 한 줄로 열두 장의 같은 칸이 더해집니다. 단, 시트 모양이 다르면 합계는 맞아 보여도 항목별 숫자가 틀릴 수 있습니다.</li>
+  </ul>
+</div>
+
+<p>월별 실적을 시트 한 장에 한 달씩 적어 두면 입력은 편한데, 연말에 "올해 실손은 몇 건이었지?"를 보려면 열두 장을 오가며 더해야 합니다. <code>='1월'!B2+'2월'!B2+…</code>처럼 하나씩 이어 붙이면 수식이 길어지고 한 달을 빠뜨리기도 쉽습니다. 엑셀에는 여러 시트의 같은 칸을 한 번에 가리키는 <strong>3차원 참조</strong>가 있어서, 수식 한 줄로 끝낼 수 있습니다.</p>
+<p>시험 공부를 하는 분이라면 "시트 탭을 <kbd>Shift</kbd>로 묶어 참조하는 순서"를 손에 익혀 두면 좋습니다. 이 글은 엑셀 "목적별 함수 조합" 시리즈의 한 편입니다. 예제는 짧게 1월~3월 세 장으로 보여 드리고, 열두 달일 때는 시트 이름만 바꾸면 됩니다.</p>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-sum-across-sheets/thumb.jpg" alt="12개 시트 한 번에 합계 - 3차원 참조 SUM" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표: 모양이 같은 월별 시트</h2>
+<p>시트 탭이 <strong>연간 · 1월 · 2월 · 3월</strong> 순서로 있고, 1월~3월 시트는 모두 아래와 같은 모양입니다. A열은 상품, B열은 그달 신계약 건수입니다(가상의 숫자). 표의 맨 왼쪽은 행 번호입니다.</p>
+<table>
+  <thead><tr><th></th><th>A</th><th>B (1월 시트)</th><th>B (2월 시트)</th><th>B (3월 시트)</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>상품</td><td>건수</td><td>건수</td><td>건수</td></tr>
+    <tr><td>2</td><td>실손</td><td>12</td><td>10</td><td>15</td></tr>
+    <tr><td>3</td><td>건강</td><td>8</td><td>11</td><td>9</td></tr>
+    <tr><td>4</td><td>암</td><td>5</td><td>4</td><td>7</td></tr>
+    <tr><td>5</td><td>운전자</td><td>9</td><td>7</td><td>6</td></tr>
+    <tr><td>6</td><td>치아</td><td>3</td><td>6</td><td>2</td></tr>
+  </tbody>
+</table>
+<p>세 시트 모두 2행이 실손, 3행이 건강처럼 <strong>같은 칸에 같은 항목</strong>이 있다는 점이 중요합니다. 연간 시트의 A2:A6에도 같은 상품 이름을 같은 순서로 적어 둡니다.</p>
+
+<h2>완성 수식과 결과</h2>
+<p>연간 시트의 B2 셀에 아래 수식을 넣습니다. 직접 입력해도 되고, Microsoft 문서에 나온 순서대로 마우스로 만들어도 됩니다.</p>
+<pre><code>=SUM('1월:3월'!B2)</code></pre>
+<ol>
+  <li>연간 시트의 B2 셀을 클릭하고 <code>=SUM(</code>까지 입력합니다.</li>
+  <li>아래쪽 시트 탭에서 <strong>1월</strong> 탭을 클릭합니다.</li>
+  <li><kbd>Shift</kbd> 키를 누른 채 <strong>3월</strong> 탭을 클릭합니다. 1월~3월 탭이 한꺼번에 선택됩니다.</li>
+  <li>B2 셀을 클릭하고 <kbd>Enter</kbd>를 누릅니다.</li>
+  <li>연간 시트로 돌아와 B2의 채우기 핸들(셀 오른쪽 아래 작은 네모)을 B6까지 끌어내립니다.</li>
+</ol>
+<table>
+  <thead><tr><th>연간 시트</th><th>A 상품</th><th>B 수식</th><th>결과</th></tr></thead>
+  <tbody>
+    <tr><td>2</td><td>실손</td><td><code>=SUM('1월:3월'!B2)</code></td><td>37</td></tr>
+    <tr><td>3</td><td>건강</td><td><code>=SUM('1월:3월'!B3)</code></td><td>28</td></tr>
+    <tr><td>4</td><td>암</td><td><code>=SUM('1월:3월'!B4)</code></td><td>16</td></tr>
+    <tr><td>5</td><td>운전자</td><td><code>=SUM('1월:3월'!B5)</code></td><td>22</td></tr>
+    <tr><td>6</td><td>치아</td><td><code>=SUM('1월:3월'!B6)</code></td><td>11</td></tr>
+    <tr><td>7</td><td>합계</td><td><code>=SUM(B2:B6)</code></td><td>114</td></tr>
+  </tbody>
+</table>
+<p>열두 달 시트가 있다면 <code>=SUM('1월:12월'!B2)</code>로 쓰면 됩니다. 시트 이름에 영문자가 아닌 글자가 들어 있으면 이름을 작은따옴표(<code>'</code>)로 묶어야 한다고 Microsoft 문서에 나와 있습니다. "1월"처럼 숫자·한글이 섞인 이름은 따옴표를 붙여 두는 편이 안전합니다.</p>
+
+<h2>수식 풀어 보기: 안쪽부터 한 겹씩</h2>
+<p>실손(2행)으로 따라가 보겠습니다.</p>
+<ol>
+  <li><strong><code>'1월:3월'</code></strong> — 시트 탭에서 1월부터 3월까지, <strong>그 사이에 놓인 모든 시트</strong>를 뜻합니다. 이름 순서가 아니라 <strong>탭이 놓인 순서</strong> 기준입니다.</li>
+  <li><strong><code>'1월:3월'!B2</code></strong> — 그 시트들의 B2 칸을 한 묶음으로 가리킵니다. 중간 결과는 1월 12, 2월 10, 3월 15 세 값입니다.</li>
+  <li><strong>바깥 <code>SUM(…)</code></strong> — 세 값을 더해 <strong>37</strong>을 돌려줍니다.</li>
+</ol>
+<p>이렇게 여러 시트의 같은 칸을 가리키는 방식을 3차원 참조라고 합니다. Microsoft 문서에 따르면 SUM 말고도 AVERAGE, COUNT, COUNTA, MAX, MIN 같은 함수에 쓸 수 있습니다. 예를 들어 <code>=MAX('1월:12월'!B2)</code>는 실손 건수가 가장 많았던 달의 건수를 보여 줍니다.</p>
+
+<h2>자주 막히는 곳</h2>
+<div class="bp-note"><p><strong>시트마다 줄 순서가 다르면, 합계는 맞는데 항목이 틀립니다.</strong> 2월 시트만 건강과 암의 줄을 바꿔 적었다고 해 보겠습니다. 3차원 참조는 "B3 칸끼리" 더할 뿐 상품 이름을 보지 않으므로, 건강은 28이 아니라 <strong>21</strong>, 암은 16이 아니라 <strong>23</strong>이 나옵니다. 그런데 맨 아래 총합은 여전히 114라서 틀린 걸 알아채기 어렵습니다. 월별 시트는 하나를 완성한 뒤 복사해서 만들고, 줄을 끼워 넣을 때는 모든 달에 똑같이 넣으세요. 모양을 맞추기 어렵다면 아래 "다른 방법"의 SUMIF 조합을 쓰면 됩니다.</p></div>
+<ul>
+  <li><strong>새로 만든 달이 합계에 안 들어갈 때</strong> — Microsoft 문서에 따르면 끝 시트(여기서는 1월과 12월) <strong>사이에</strong> 넣거나 복사한 시트는 계산에 들어가고, 바깥으로 옮긴 시트는 빠집니다. 새 달 시트가 12월 탭 오른쪽에 있으면 합계에 들어가지 않습니다. 탭을 끌어 1월과 12월 사이로 옮기세요.</li>
+  <li><strong>연간 시트를 1월과 12월 사이에 두지 마세요</strong> — 연간 시트가 범위 안에 들어가면 자기 자신의 칸을 더하게 되어 순환 참조 경고가 뜰 수 있습니다. 연간 시트는 맨 앞이나 맨 뒤에 둡니다.</li>
+  <li><strong>SUMIF·VLOOKUP에는 3차원 참조를 못 씁니다</strong> — Microsoft 문서의 3차원 참조 사용 가능 함수 목록에 두 함수는 없습니다. 조건을 붙여 더하려면 아래 방법을 씁니다.</li>
+</ul>
+
+<h2>다른 방법: 시트 모양이 다를 때 SUMIF + INDIRECT</h2>
+<p>시트마다 상품 줄 순서가 달라도 <strong>이름으로 찾아서</strong> 더하는 실무용 방법입니다. 먼저 연간 시트의 빈 곳(예: E2:E4)에 시트 이름을 한 칸에 하나씩 적습니다. 열두 달이면 E2:E13에 1월~12월을 적습니다.</p>
+<pre><code>=SUMPRODUCT(SUMIF(INDIRECT("'"&amp;$E$2:$E$4&amp;"'!A2:A6"), A2, INDIRECT("'"&amp;$E$2:$E$4&amp;"'!B2:B6")))</code></pre>
+<ol>
+  <li><strong>가장 안쪽 <code>"'"&amp;$E$2:$E$4&amp;"'!A2:A6"</code></strong> — 시트 이름 앞뒤에 따옴표와 범위를 붙여 <code>'1월'!A2:A6</code>, <code>'2월'!A2:A6</code>, <code>'3월'!A2:A6</code>이라는 <strong>글자</strong> 세 개를 만듭니다.</li>
+  <li><strong><code>INDIRECT(…)</code></strong> — 그 글자를 진짜 셀 범위로 바꿉니다. Microsoft 문서 설명대로 "텍스트 문자열로 지정된 참조"를 돌려주는 함수입니다.</li>
+  <li><strong><code>SUMIF(범위, A2, 더할 범위)</code></strong> — 시트마다 A열에서 A2(예: 건강)와 같은 줄을 찾아 B열을 더합니다. 중간 결과는 시트별 값 {8, 11, 9}입니다. 2월 시트의 줄 순서가 달라도 이름으로 찾으므로 11이 맞게 잡힙니다.</li>
+  <li><strong>바깥 <code>SUMPRODUCT(…)</code></strong> — 세 값을 더해 <strong>28</strong>을 돌려줍니다.</li>
+</ol>
+<p>이 수식은 줄 순서를 바꾼 예제에서도 건강 28, 암 16으로 맞게 나옵니다. 제가 쓰는 검증 도구가 3차원 참조와 INDIRECT를 계산하지 못해서, 두 방법 모두 시트별 수식으로 풀어 같은 값이 나오는지로 확인했습니다. 쓸 때 주의할 점도 있습니다.</p>
+<ul>
+  <li>E열의 시트 이름이 실제 탭 이름과 한 글자라도 다르면 INDIRECT가 <code>#REF!</code>를 냅니다(Microsoft 문서 기준). "1 월"처럼 띄어쓰기가 섞였는지 확인하세요.</li>
+  <li><code>"A2:A6"</code>은 글자라서 월별 시트에 줄을 끼워 넣어도 저절로 늘어나지 않습니다. 처음부터 <code>A2:A50</code>처럼 넉넉하게 잡아 두면 편합니다.</li>
+</ul>
+<p><strong>수식 없이 하는 방법</strong>도 있습니다. <strong>데이터</strong> 탭의 <strong>데이터 도구</strong> 그룹에 있는 <strong>통합</strong> 명령은 여러 시트의 범위를 골라 합계를 한 번에 만들어 줍니다. Microsoft 문서는 줄 순서까지 같으면 "위치 기준", 순서는 달라도 이름이 같으면 "범주 기준"으로 통합하라고 안내합니다. 한 번 만들고 끝낼 보고서라면 이쪽이 빠를 수 있습니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details>
+    <summary>1월:12월로 썼는데 중간에 있는 다른 시트까지 더해져요.</summary>
+    <p>3차원 참조는 이름이 아니라 탭이 놓인 순서로 범위를 정합니다. 1월과 12월 탭 사이에 메모용 시트 같은 다른 시트가 끼어 있으면 그 시트의 같은 칸도 더해집니다. 다른 시트는 12월 뒤나 1월 앞으로 옮기세요.</p>
+  </details>
+  <details>
+    <summary>합계 대신 월평균을 내고 싶어요.</summary>
+    <p>SUM 자리에 AVERAGE를 넣어 =AVERAGE('1월:12월'!B2)로 씁니다. Microsoft 문서에 따르면 AVERAGE, COUNT, MAX, MIN도 3차원 참조에 쓸 수 있습니다.</p>
+  </details>
+  <details>
+    <summary>시트 이름을 "2026-01"처럼 바꿔도 되나요?</summary>
+    <p>됩니다. 수식 안의 시트 이름도 같은 이름으로 써야 하고, 영문자가 아닌 글자가 섞인 이름은 작은따옴표로 묶어 '2026-01:2026-12'!B2처럼 씁니다. INDIRECT 방법을 쓴다면 E열의 시트 이름 목록은 글자일 뿐이라, 탭 이름을 바꿀 때마다 목록도 직접 고쳐야 합니다.</p>
+  </details>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "1월:12월로 썼는데 중간에 있는 다른 시트까지 더해져요.", "acceptedAnswer": { "@type": "Answer", "text": "3차원 참조는 이름이 아니라 탭이 놓인 순서로 범위를 정합니다. 1월과 12월 탭 사이에 메모용 시트 같은 다른 시트가 끼어 있으면 그 시트의 같은 칸도 더해집니다. 다른 시트는 12월 뒤나 1월 앞으로 옮기세요." } },
+    { "@type": "Question", "name": "합계 대신 월평균을 내고 싶어요.", "acceptedAnswer": { "@type": "Answer", "text": "SUM 자리에 AVERAGE를 넣어 =AVERAGE('1월:12월'!B2)로 씁니다. Microsoft 문서에 따르면 AVERAGE, COUNT, MAX, MIN도 3차원 참조에 쓸 수 있습니다." } },
+    { "@type": "Question", "name": "시트 이름을 \"2026-01\"처럼 바꿔도 되나요?", "acceptedAnswer": { "@type": "Answer", "text": "됩니다. 수식 안의 시트 이름도 같은 이름으로 써야 하고, 영문자가 아닌 글자가 섞인 이름은 작은따옴표로 묶어 '2026-01:2026-12'!B2처럼 씁니다. INDIRECT 방법을 쓴다면 E열의 시트 이름 목록은 글자일 뿐이라, 탭 이름을 바꿀 때마다 목록도 직접 고쳐야 합니다." } }
+  ]
+}
+</script>
+
+<h2>함께 보면 좋은 글</h2>
+<ul>
+  <li><a href="https://www.benspaper.info/2026/09/excel-sumif-sumifs.html">엑셀 SUMIF · SUMIFS</a> — 조건에 맞는 값만 더하는 기본 문법</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-sumproduct.html">엑셀 SUMPRODUCT 함수</a> — 배열을 한 번에 더하는 원리</li>
+  <li><a href="https://www.benspaper.info/2026/09/excel-absolute-reference.html">엑셀 절대참조</a> — <code>$E$2:$E$4</code>에 달러 기호를 붙이는 이유</li>
+  <li><a href="https://www.benspaper.info/p/excel-guide.html">엑셀 글 전체 목차</a> — 이 시리즈의 다른 조합 글도 여기서 찾을 수 있습니다</li>
+</ul>
+
+<h2>참고</h2>
+<ul>
+  <li><a href="https://support.microsoft.com/ko-kr/excel/create-a-3-d-reference-to-the-same-cell-range-on-multiple-worksheets">Microsoft 지원 — 여러 워크시트의 동일한 셀 범위에 대한 3차원 참조 만들기</a></li>
+  <li><a href="https://support.microsoft.com/ko-kr/office/indirect-%ED%95%A8%EC%88%98-474b3a3a-8a26-4f44-b491-92b6306fa261">Microsoft 지원 — INDIRECT 함수</a></li>
+  <li><a href="https://support.microsoft.com/ko-kr/excel/consolidate-data-in-multiple-worksheets">Microsoft 지원 — 여러 워크시트의 데이터 통합</a></li>
+</ul>

@@ -1,0 +1,151 @@
+<div class="bp-summary">
+  <p class="bp-summary-title">핵심 요약</p>
+  <ul>
+    <li>날짜별로 쌓인 기록에서 <strong>8월 합계, 9월 합계</strong>처럼 달마다 합계를 내는 방법입니다.</li>
+    <li><code>SUMIFS</code>에 "그 달 1일 이상"과 "그 달 말일(<code>EOMONTH</code>) 이하" 두 조건을 주고, 날짜와 조건 기호는 <code>&amp;</code>로 잇습니다.</li>
+    <li>예제에서 8월 35, 9월 37, 10월 19가 나옵니다. <code>SUMPRODUCT(MONTH()=)</code> 방식과 연도가 섞였을 때의 함정도 함께 봅니다.</li>
+  </ul>
+</div>
+
+<p>상담이나 판매 기록을 날짜순으로 적어 두면, 월말마다 "이번 달 몇 건이었지?"를 계산하게 됩니다. 필터로 한 달씩 골라 합계를 보는 방법도 있지만, 달이 바뀔 때마다 다시 해야 합니다. 수식으로 월별 합계표를 만들어 두면 기록만 추가해도 합계가 알아서 바뀝니다. 가계부의 월별 지출, 동아리 회비 입금 내역 정리도 같은 방식입니다.</p>
+
+<p>이 글은 엑셀 "목적별 함수 조합" 시리즈의 한 편입니다. 핵심은 "9월"을 엑셀이 알아듣는 조건, 즉 <strong>9월 1일부터 9월 30일까지</strong>로 바꿔 주는 것입니다.</p>
+
+<figure>
+  <img src="https://cdn.jsdelivr.net/gh/uncleB-dev/benpsaper-assets@d18bd96ee7e2b9e7d35edfbe18972a4c9bf9b709/excel-monthly-sum/thumb.jpg" alt="날짜 섞인 표 월별 합계 - SUMIFS 날짜 조건" width="1200" height="630" fetchpriority="high" />
+</figure>
+
+<h2>예제 표: 날짜별 기록과 월별 합계 칸</h2>
+
+<p>A~C열이 날짜별 기록, E~F열이 월별 합계표입니다. 이름은 모두 가상입니다. 맨 윗줄의 A~F는 열 이름, 맨 왼쪽 숫자는 행 번호입니다. 11행은 일부러 넣은 <strong>작년 9월</strong> 기록입니다.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>날짜</td><td>담당</td><td>수량</td><td></td><td>월</td><td>합계</td></tr>
+    <tr><td>2</td><td>2026-08-03</td><td>김민준</td><td>12</td><td></td><td>2026-08-01</td><td></td></tr>
+    <tr><td>3</td><td>2026-08-17</td><td>이서연</td><td>8</td><td></td><td>2026-09-01</td><td></td></tr>
+    <tr><td>4</td><td>2026-08-31</td><td>박지훈</td><td>15</td><td></td><td>2026-10-01</td><td></td></tr>
+    <tr><td>5</td><td>2026-09-01</td><td>김민준</td><td>10</td><td></td><td></td><td></td></tr>
+    <tr><td>6</td><td>2026-09-12</td><td>최수아</td><td>7</td><td></td><td></td><td></td></tr>
+    <tr><td>7</td><td>2026-09-12</td><td>이서연</td><td>9</td><td></td><td></td><td></td></tr>
+    <tr><td>8</td><td>2026-09-30</td><td>박지훈</td><td>11</td><td></td><td></td><td></td></tr>
+    <tr><td>9</td><td>2026-10-01</td><td>김민준</td><td>6</td><td></td><td></td><td></td></tr>
+    <tr><td>10</td><td>2026-10-15</td><td>최수아</td><td>13</td><td></td><td></td><td></td></tr>
+    <tr><td>11</td><td>2025-09-20</td><td>이서연</td><td>5</td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<p>E열에는 "8월"이라고 글자로 쓰지 말고 <strong>그 달 1일 날짜</strong>(2026-08-01)를 입력합니다. 그래야 수식이 날짜로 계산할 수 있습니다. "2026-08"처럼 보이게 하고 싶다면 E2:E4를 선택하고 <kbd>Ctrl</kbd> + <kbd>1</kbd> → 범주 [사용자 지정] → 형식 칸에 <code>yyyy-mm</code>을 넣으세요. 보이는 모양만 바뀌고 값은 1일 날짜 그대로입니다.</p>
+
+<h2>완성 수식: F2에 넣고 F4까지 채우기</h2>
+
+<pre><code>=SUMIFS($C$2:$C$11,$A$2:$A$11,"&gt;="&amp;E2,$A$2:$A$11,"&lt;="&amp;EOMONTH(E2,0))</code></pre>
+
+<ol>
+  <li>F2를 클릭하고 위 수식을 입력한 뒤 <kbd>Enter</kbd>를 누릅니다. <code>35</code>가 나오면 정상입니다.</li>
+  <li>F2의 채우기 핸들(오른쪽 아래 작은 네모)을 F4까지 끌어내립니다.</li>
+  <li>기록 범위는 $로 고정돼 있고, <code>E2</code>만 E3, E4로 바뀝니다.</li>
+</ol>
+
+<table>
+  <thead>
+    <tr><th></th><th>E (월)</th><th>F (결과)</th><th>더해진 행</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>2</td><td>2026-08</td><td>35</td><td>12 + 8 + 15 (2~4행)</td></tr>
+    <tr><td>3</td><td>2026-09</td><td>37</td><td>10 + 7 + 9 + 11 (5~8행)</td></tr>
+    <tr><td>4</td><td>2026-10</td><td>19</td><td>6 + 13 (9~10행)</td></tr>
+  </tbody>
+</table>
+
+<p>작년 9월(11행)의 5는 9월 합계에 들어가지 않았습니다. 조건이 "2026년 9월 1일 ~ 9월 30일"이기 때문입니다. 새 기록을 12행부터 계속 적을 계획이라면 범위를 처음부터 <code>$A$2:$A$500</code>, <code>$C$2:$C$500</code>처럼 넉넉히 잡아 두세요. 빈 행은 합계에 영향을 주지 않습니다.</p>
+
+<h2>수식 풀어 보기: 안쪽부터 한 겹씩</h2>
+
+<p>9월 행(F3)으로 따라가 보겠습니다. E3에는 2026-09-01이 들어 있습니다.</p>
+
+<h3>1단계: EOMONTH(E3,0) — 그 달의 마지막 날</h3>
+
+<p>EOMONTH(시작일, 개월 수)는 몇 달 뒤의 <strong>말일</strong>을 돌려줍니다. 개월 수가 0이면 같은 달의 말일입니다. 결과는 2026-09-30입니다. 달마다 30일인지 31일인지 따질 필요가 없고, 2월도 알아서 28일이나 29일로 맞춰 줍니다.</p>
+
+<h3>2단계: "&gt;="&amp;E3 — 조건 글자 만들기</h3>
+
+<p>SUMIFS의 조건은 <code>"&gt;=10"</code>처럼 <strong>비교 기호와 값이 붙은 글자</strong>여야 합니다. 셀에 든 날짜를 쓰려면 기호를 따옴표로 감싸고 <code>&amp;</code>로 이어 붙입니다. 날짜는 속으로 숫자(일련번호)로 저장되므로 실제로 만들어지는 조건은 이렇습니다.</p>
+
+<table>
+  <thead>
+    <tr><th>수식 조각</th><th>만들어지는 조건</th><th>뜻</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>"&gt;="&amp;E3</code></td><td><code>&gt;=46266</code></td><td>2026-09-01 이후(당일 포함)</td></tr>
+    <tr><td><code>"&lt;="&amp;EOMONTH(E3,0)</code></td><td><code>&lt;=46295</code></td><td>2026-09-30 이전(당일 포함)</td></tr>
+  </tbody>
+</table>
+
+<p>46266은 1900년 1월 1일을 1로 세었을 때 2026년 9월 1일의 번호입니다. 숫자가 낯설어도 괜찮습니다. 엑셀이 A열 날짜도 같은 번호로 비교합니다.</p>
+
+<h3>3단계: SUMIFS — 두 조건을 모두 만족하는 행만 더하기</h3>
+
+<pre><code>SUMIFS(합계 범위, 조건 범위1, 조건1, 조건 범위2, 조건2)</code></pre>
+
+<p>A열 날짜가 46266 이상<strong>이면서</strong> 46295 이하인 행은 5~8행입니다. 그 행들의 C열 10, 7, 9, 11을 더해 <code>37</code>이 나옵니다. SUMIF와 달리 SUMIFS는 <strong>합계 범위가 맨 앞</strong>에 옵니다. Microsoft 문서도 두 함수의 인수 순서가 다르다고 따로 강조합니다.</p>
+
+<div class="bp-note">
+  <p><strong>담당자별 월 합계도 조건 하나만 더하면 됩니다.</strong> 9월 김민준의 합계는 <code>=SUMIFS($C$2:$C$11,$A$2:$A$11,"&gt;="&amp;E3,$A$2:$A$11,"&lt;="&amp;EOMONTH(E3,0),$B$2:$B$11,"김민준")</code>이고 결과는 <code>10</code>입니다. "김민준" 대신 이름이 적힌 셀 주소를 넣으면 표로 펼칠 수 있습니다.</p>
+</div>
+
+<h2>자주 막히는 곳</h2>
+
+<div class="bp-note">
+  <p><strong>합계가 0이거나 모자랄 때</strong></p>
+  <ul>
+    <li><strong>E열이 1일이 아닙니다.</strong> E3에 2026-09-15를 넣으면 조건이 "9월 15일 이후"가 되어 1~14일이 빠집니다. E열에 어떤 날짜를 넣어도 되게 하려면 첫 조건을 <code>"&gt;"&amp;EOMONTH(E3,-1)</code>(지난달 말일보다 뒤)로 바꾸세요. 예제에서 결과는 같았습니다(35, 37, 19).</li>
+    <li><strong>날짜에 시간이 붙어 있습니다.</strong> 프로그램에서 내려받은 기록은 <code>2026-09-30 14:00</code>처럼 시간이 붙기도 합니다. 이 값은 9월 30일 0시보다 크기 때문에 <code>"&lt;="&amp;EOMONTH(…)</code> 조건에서 빠집니다. 검증에서도 9월 30일 14시 기록이 합계에 들어가지 않았습니다. 두 번째 조건을 <code>"&lt;"&amp;EOMONTH(E3,0)+1</code>(다음 달 1일 0시 전)로 바꾸면 들어갑니다.</li>
+    <li><strong>A열 날짜가 글자입니다.</strong> 셀 안에서 왼쪽으로 붙어 있고 정렬을 따로 바꾸지 않았다면 글자일 가능성이 큽니다. 글자로 된 날짜는 날짜 계산에서 기대와 다른 결과를 내기 쉬우니, 날짜로 다시 입력해 두는 것이 안전합니다.</li>
+    <li><strong>E열에 "9월"이라고 글자로 적었습니다.</strong> 수식이 날짜로 비교하지 못합니다. 1일 날짜를 넣고 서식으로 보이는 모양만 바꾸세요.</li>
+  </ul>
+</div>
+
+<h2>다른 방법: DATE로 직접, SUMPRODUCT, 보조열</h2>
+
+<h3>월 칸 없이 DATE로 직접 쓰기</h3>
+
+<pre><code>=SUMIFS($C$2:$C$11,$A$2:$A$11,"&gt;="&amp;DATE(2026,9,1),$A$2:$A$11,"&lt;="&amp;DATE(2026,9,30))</code></pre>
+
+<p>DATE(연, 월, 일)가 날짜를 만들어 줍니다. 결과는 <code>37</code>입니다. 한 달만 급히 볼 때 편하지만, 달이 바뀔 때마다 숫자를 고쳐야 합니다.</p>
+
+<h3>SUMPRODUCT와 MONTH</h3>
+
+<pre><code>=SUMPRODUCT((YEAR($A$2:$A$11)=2026)*(MONTH($A$2:$A$11)=9)*$C$2:$C$11)</code></pre>
+
+<p>MONTH는 날짜에서 월 숫자만 꺼냅니다. <code>MONTH(A2:A11)=9</code>는 행마다 참·거짓을 만들고, 곱하면 참은 1, 거짓은 0이 됩니다. 두 조건이 모두 맞는 행의 수량만 남아 더해지므로 결과는 <code>37</code>입니다. 조건을 곱해 더하는 SUMPRODUCT 사용법은 Microsoft 문서에도 예로 나와 있습니다.</p>
+
+<p>🔸 여기서 <strong>YEAR 조건을 빼면</strong> <code>=SUMPRODUCT((MONTH($A$2:$A$11)=9)*$C$2:$C$11)</code>의 결과가 <code>42</code>가 됩니다. 작년 9월(11행)의 5까지 더해졌기 때문입니다. 여러 해의 기록이 한 표에 있다면 연도 조건을 꼭 같이 거세요. 또 날짜가 빈 칸은 MONTH 결과가 1로 나와서, 날짜 없이 수량만 적힌 행은 1월로 잡힐 수 있습니다.</p>
+
+<h3>보조열에 "2026-09"를 만들고 SUMIF</h3>
+
+<p>D열 같은 빈 열에 <code>=TEXT(A2,"yyyy-mm")</code>를 넣고 끝까지 채우면 행마다 <code>2026-09</code> 같은 글자가 생깁니다. 그다음 <code>=SUMIF($D$2:$D$11,"2026-09",$C$2:$C$11)</code>로 더하면 <code>37</code>입니다. 수식이 짧고 눈으로 확인하기 쉬워서, 시험처럼 풀이 과정을 보여 줘야 할 때나 피벗 테이블의 기준 열이 필요할 때 쓸 만합니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<div class="bp-faq">
+  <details><summary>월 칸에 "9월"이라고 쓰면 안 되나요?</summary><p>SUMIFS가 날짜 크기로 비교해야 하므로 글자 "9월"로는 계산이 되지 않습니다. 그 달 1일 날짜(2026-09-01)를 넣고, 보이는 모양은 셀 서식의 사용자 지정 형식 <code>yyyy-mm</code>으로 바꾸세요.</p></details>
+  <details><summary>SUMPRODUCT(MONTH()=9) 결과가 SUMIFS보다 큽니다.</summary><p>다른 해의 같은 달 기록이 섞여 있을 가능성이 큽니다. MONTH는 월 숫자만 보므로 작년 9월도 9로 셉니다. <code>(YEAR(범위)=2026)*</code>를 앞에 곱해 연도 조건을 같이 거세요.</p></details>
+  <details><summary>말일 기록이 합계에서 빠집니다.</summary><p>날짜에 시간이 붙어 있으면 "말일 이하" 조건에서 빠집니다. 두 번째 조건을 <code>"&lt;"&amp;EOMONTH(E2,0)+1</code>로 바꿔 "다음 달 1일 전"까지로 잡으면 들어갑니다.</p></details>
+</div>
+
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "월 칸에 \"9월\"이라고 쓰면 안 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "SUMIFS가 날짜 크기로 비교해야 하므로 글자 \"9월\"로는 계산이 되지 않습니다. 그 달 1일 날짜(2026-09-01)를 넣고, 보이는 모양은 셀 서식의 사용자 지정 형식 yyyy-mm으로 바꾸세요."}},
+    {"@type": "Question", "name": "SUMPRODUCT(MONTH()=9) 결과가 SUMIFS보다 큽니다.", "acceptedAnswer": {"@type": "Answer", "text": "다른 해의 같은 달 기록이 섞여 있을 가능성이 큽니다. MONTH는 월 숫자만 보므로 작년 9월도 9로 셉니다. (YEAR(범위)=2026)*를 앞에 곱해 연도 조건을 같이 거세요."}},
+    {"@type": "Question", "name": "말일 기록이 합계에서 빠집니다.", "acceptedAnswer": {"@type": "Answer", "text": "날짜에 시간이 붙어 있으면 \"말일 이하\" 조건에서 빠집니다. 두 번째 조건을 \"<\"&EOMONTH(E2,0)+1로 바꿔 \"다음 달 1일 전\"까지로 잡으면 들어갑니다."}}
+  ]
+}</script>
+
+<p>함께 보면 좋은 글: <a href="https://www.benspaper.info/2026/09/excel-sumif-sumifs.html">엑셀 SUMIF SUMIFS 조건부 합계 구하기</a>, <a href="https://www.benspaper.info/2026/09/excel-eomonth.html">엑셀 EOMONTH 함수로 월초 월말 구하기</a>, <a href="https://www.benspaper.info/2026/09/excel-sumproduct.html">엑셀 SUMPRODUCT 함수 사용법</a>, <a href="https://www.benspaper.info/2026/09/excel-make-pivot-table.html">엑셀 피벗 테이블 만들기 따라 하기</a>. 목적별 함수 조합 글 전체는 <a href="https://www.benspaper.info/p/excel-guide.html">엑셀 목차</a>에서 볼 수 있습니다.</p>
+
+<p>참고: <a href="https://support.microsoft.com/ko-kr/office/sumifs-%ED%95%A8%EC%88%98-c9e748f5-7ea7-455d-9406-611cebce642b">Microsoft 지원 — SUMIFS 함수</a>, <a href="https://support.microsoft.com/ko-kr/office/eomonth-%ED%95%A8%EC%88%98-7314ffa1-2bc9-4005-9d66-f49db127d628">Microsoft 지원 — EOMONTH 함수</a>, <a href="https://support.microsoft.com/ko-kr/office/sumproduct-%ED%95%A8%EC%88%98-16753e75-9f68-4874-94ac-4d2145a2fd2e">Microsoft 지원 — SUMPRODUCT 함수</a></p>
