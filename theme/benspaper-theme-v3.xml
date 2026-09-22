@@ -34,6 +34,7 @@
   <script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7811453049167567'></script>
 
   <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+  <b:if cond='not data:blog.isMobileRequest'><link expr:href='data:blog.canonicalUrl + "?m=1"' media='only screen and (max-width: 640px)' rel='alternate'/></b:if>
   <link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default&quot;' expr:title='data:blog.title' rel='alternate' type='application/atom+xml'/>
   <b:if cond='data:blog.blogspotFaviconUrl'>
     <link expr:href='data:blog.blogspotFaviconUrl' rel='icon' type='image/x-icon'/>
